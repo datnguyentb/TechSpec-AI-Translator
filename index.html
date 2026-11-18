@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechSpec AI Translator - Dịch Thuật Chuyên Ngành Kỹ Thuật</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        cad: {
+                            bg: 'var(--cad-bg)',
+                            panel: 'var(--cad-panel)',
+                            surface: 'var(--cad-surface)',
+                            border: 'var(--cad-border)',
+                            accent: 'var(--cad-accent)',
+                            accentHover: 'var(--cad-accent-hover)',
+                            blue: 'var(--cad-blue)',
+                            grid: 'var(--cad-grid)'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Theme CSS Custom Properties (Variables) */
+        :root {
+            --cad-bg: #f1f5f9;
+            --cad-panel: #ffffff;
+            --cad-surface: #f8fafc;
+            --cad-border: #cbd5e1;
+            --cad-accent: #0284c7;
+            --cad-accent-hover: #0369a1;
+            --cad-blue: #2563eb;
+            --cad-grid: #e2e8f0;
+            --grid-line: rgba(2, 132, 199, 0.08);
+            --scroll-track: #f1f5f9;
+            --scroll-thumb: #cbd5e1;
+        }
+
+        html.dark {
+            --cad-bg: #0b0f19;
+            --cad-panel: #111827;
+            --cad-surface: #1e293b;
+            --cad-border: #2d3748;
+            --cad-accent: #06b6d4;
+            --cad-accent-hover: #0891b2;
+            --cad-blue: #3b82f6;
+            --cad-grid: #1e293b;
+            --grid-line: rgba(6, 182, 212, 0.05);
+            --scroll-track: #0b0f19;
+            --scroll-thumb: #334155;
+        }
+
+        /* Custom CAD Grid Background */
+        .cad-grid-bg {
+            background-color: var(--cad-bg);
+            background-image: 
+                linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+            background-size: 24px 24px;
+            transition: background-color 0.2s ease;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--scroll-track);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--scroll-thumb);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--cad-accent);
+        }
+
+        /* Scanning Animation Effect */
+        @keyframes scanline {
+            0% { top: 0%; opacity: 0; }
+            15% { opacity: 1; }
+            85% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+        .scanner-bar {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--cad-accent), #38bdf8, var(--cad-accent), transparent);
+            box-shadow: 0 0 15px 2px rgba(6, 182, 212, 0.8);
+            animation: scanline 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            z-index: 20;
+        }
+
+        /* Crosshair cursor for cropping */
+        .cursor-crosshair-cad {
+            cursor: crosshair;
+        }
+    </style>
+    <script>
+        // Zero-flicker Theme Initialization before first paint
+        (function() {
+            const savedTheme = localStorage.getItem('techspec_theme') || 'dark';
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
+</head>
+<body class="bg-cad-bg text-slate-800 dark:text-slate-200 font-sans min-h-screen flex flex-col selection:bg-cyan-500/30 selection:text-cyan-900 dark:selection:text-cyan-200 transition-colors duration-200">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- HEADER -->
+    <header class="bg-white/95 dark:bg-cad-panel/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 px-4 py-3 shadow-sm dark:shadow-lg transition-colors duration-200">
+        <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 border border-cyan-400/30">
+                    <i data-lucide="compass" class="w-6 h-6 text-white"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-bold text-lg tracking-tight text-slate-900 dark:text-white">TechSpec <span class="text-cyan-600 dark:text-cyan-400">AI</span></h1>
+                        <span class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border border-cyan-500/30">CAD & Engineering</span>
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">Dịch thuật ngữ & bản vẽ kỹ thuật thông minh với Gemini</p>
+                </div>
+            </div>
+
+            <!-- Controls: Domain, Language Pair, Theme Switcher, API Key -->
+            <div class="flex flex-wrap items-center gap-2.5 sm:gap-3 flex-1 justify-end">
+                
+                <!-- Domain Selector -->
+                <div class="relative flex items-center">
+                    <i data-lucide="layers" class="w-4 h-4 text-cyan-600 dark:text-cyan-400 absolute left-3 pointer-events-none"></i>
+                    <select id="domain-select" class="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:border-cyan-500/60 text-slate-800 dark:text-slate-200 text-xs sm:text-sm rounded-lg pl-9 pr-8 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition appearance-none cursor-pointer font-medium">
+                        <option value="autocad">AutoCAD / Kỹ thuật vẽ</option>
+                        <option value="mechanical">Cơ khí chế tạo (Mechanical)</option>
+                        <option value="electrical">Điện - Tự động hóa (PLC/MEP)</option>
+                        <option value="construction">Xây dựng - Kiến trúc (BIM)</option>
+                        <option value="it">CNTT / Phần mềm hệ thống</option>
+                    </select>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-2.5 pointer-events-none"></i>
+                </div>
+
+                <!-- Language Pair Selector -->
+                <div class="relative flex items-center">
+                    <i data-lucide="languages" class="w-4 h-4 text-blue-600 dark:text-blue-400 absolute left-3 pointer-events-none"></i>
+                    <select id="lang-select" class="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:border-cyan-500/60 text-slate-800 dark:text-slate-200 text-xs sm:text-sm rounded-lg pl-9 pr-8 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition appearance-none cursor-pointer">
+                        <option value="en-vi">Anh (EN) → Việt (VI)</option>
+                        <option value="zh-vi">Trung (ZH) → Việt (VI)</option>
+                        <option value="ja-vi">Nhật (JA) → Việt (VI)</option>
+                        <option value="ko-vi">Hàn (KO) → Việt (VI)</option>
+                    </select>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-2.5 pointer-events-none"></i>
+                </div>
+
+                <!-- Theme Switcher Button -->
+                <button id="btn-theme-toggle" type="button" class="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 text-xs font-medium transition active:scale-95 cursor-pointer" title="Chuyển đổi giao diện Sáng / Tối">
+                    <i id="theme-icon-sun" data-lucide="sun" class="w-4 h-4 text-amber-500 hidden"></i>
+                    <i id="theme-icon-moon" data-lucide="moon" class="w-4 h-4 text-cyan-400"></i>
+                    <span id="theme-label">Tối</span>
+                </button>
+
+                <!-- API Key Input & Mode Indicator -->
+                <div class="flex items-center bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-2.5 py-1.5 focus-within:border-cyan-500/60 transition">
+                    <i data-lucide="key" class="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 mr-2 shrink-0"></i>
+                    <input type="password" id="api-key-input" placeholder="Gemini API Key (Trống = Demo)" class="bg-transparent text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none w-36 sm:w-44 font-mono">
+                    <span id="mode-badge" class="ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 whitespace-nowrap">
+                        DEMO MOCK
+                    </span>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN WORKSPACE (SPLIT VIEW) -->
+    <main class="flex-1 cad-grid-bg p-4 sm:p-6">
+        <div class="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
+            
+            <!-- LEFT COLUMN: INPUT (6 cols on lg) -->
+            <section class="lg:col-span-6 flex flex-col bg-white/95 dark:bg-cad-panel/90 border border-slate-200 dark:border-slate-800 rounded-xl shadow-lg dark:shadow-2xl overflow-hidden transition-colors duration-200">
+                
+                <!-- Input Toolbar -->
+                <div class="p-3 sm:p-4 bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 transition-colors duration-200">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-cyan-500 dark:bg-cyan-400 animate-pulse"></span>
+                        <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">Nguồn Dữ Liệu (Input)</h2>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button id="btn-screen-capture" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 dark:bg-cyan-500/15 dark:hover:bg-cyan-500/25 text-cyan-700 dark:text-cyan-300 border border-cyan-500/40 text-xs font-medium transition active:scale-95" title="Chụp màn hình hoặc cửa sổ AutoCAD">
+                            <i data-lucide="crop" class="w-3.5 h-3.5"></i>
+                            <span>Chụp vùng màn hình</span>
+                        </button>
+                        
+                        <button id="btn-sample-cad" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 text-xs font-medium transition active:scale-95" title="Mở bản vẽ AutoCAD mẫu để test cắt vùng">
+                            <i data-lucide="file-image" class="w-3.5 h-3.5 text-amber-500 dark:text-amber-400"></i>
+                            <span class="hidden sm:inline">Bản vẽ mẫu</span>
+                        </button>
+
+                        <button id="btn-paste-trigger" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 text-xs font-medium transition active:scale-95" title="Dán ảnh từ Clipboard (Ctrl+V)">
+                            <i data-lucide="clipboard-paste" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400"></i>
+                            <span>Dán ảnh (Ctrl+V)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Input Content Area -->
+                <div class="p-4 flex-1 flex flex-col gap-4 relative">
+                    
+                    <!-- Scanning Overlay (Hidden by default) -->
+                    <div id="scanning-overlay" class="hidden absolute inset-0 bg-white/75 dark:bg-slate-950/60 backdrop-blur-[2px] z-20 flex flex-col items-center justify-center">
+                        <div class="scanner-bar"></div>
+                        <div class="bg-white/95 dark:bg-slate-900/90 border border-cyan-500/40 px-4 py-3 rounded-xl flex items-center gap-3 shadow-2xl">
+                            <i data-lucide="cpu" class="w-5 h-5 text-cyan-600 dark:text-cyan-400 animate-spin"></i>
+                            <div>
+                                <p class="text-sm font-medium text-slate-900 dark:text-white">Gemini Vision đang phân tích...</p>
+                                <p class="text-xs text-cyan-600 dark:text-cyan-400 font-mono" id="scanning-domain-text">Ngữ cảnh: AutoCAD / Kỹ thuật vẽ</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image Preview / Dropzone Box -->
+                    <div id="image-dropzone" class="relative rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700/80 hover:border-cyan-500/60 bg-slate-50/80 dark:bg-slate-950/50 transition-all min-h-[210px] flex flex-col items-center justify-center p-4 group overflow-hidden">
+                        
+                        <!-- Empty State -->
+                        <div id="image-empty-state" class="text-center max-w-sm">
+                            <div class="w-12 h-12 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center mx-auto mb-3 group-hover:border-cyan-500/40 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 text-slate-500 dark:text-slate-400 shadow-sm transition">
+                                <i data-lucide="scan-line" class="w-6 h-6"></i>
+                            </div>
+                            <p class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Chụp vùng bản vẽ hoặc nhấn <kbd class="px-1.5 py-0.5 text-xs font-mono bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-cyan-700 dark:text-cyan-400">Ctrl + V</kbd></p>
+                            <p class="text-xs text-slate-500">Hỗ trợ chụp cửa sổ phần mềm CAD, PDF thông số kỹ thuật hoặc chọn "Bản vẽ mẫu" để thử nghiệm ngay.</p>
+                        </div>
+
+                        <!-- Active Image Preview -->
+                        <div id="image-preview-wrapper" class="hidden w-full h-full flex flex-col items-center justify-center relative">
+                            <div class="absolute top-2 right-2 flex items-center gap-1.5 z-10 bg-white/95 dark:bg-slate-900/90 backdrop-blur border border-slate-300 dark:border-slate-700 p-1 rounded-lg shadow-lg">
+                                <button id="btn-recrop" class="p-1.5 text-slate-600 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition" title="Cắt lại vùng này">
+                                    <i data-lucide="crop" class="w-4 h-4"></i>
+                                </button>
+                                <button id="btn-zoom-img" class="p-1.5 text-slate-600 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition" title="Phóng to / Thu nhỏ">
+                                    <i data-lucide="zoom-in" class="w-4 h-4"></i>
+                                </button>
+                                <button id="btn-clear-img" class="p-1.5 text-slate-600 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition" title="Xóa ảnh">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            <div class="overflow-auto max-h-[280px] w-full flex justify-center items-center rounded-lg">
+                                <img id="preview-img" src="" alt="Vùng ảnh kỹ thuật đã chọn" class="max-h-[260px] w-auto object-contain rounded border border-slate-300 dark:border-slate-700/80 shadow-md transition-transform duration-200">
+                            </div>
+                            <span id="image-meta-badge" class="mt-2 text-[11px] font-mono text-cyan-700 dark:text-cyan-400/90 bg-cyan-50 dark:bg-cyan-950/50 border border-cyan-500/30 dark:border-cyan-500/20 px-2.5 py-0.5 rounded-full">
+                                Đã sẵn sàng nhận diện OCR & Thuật ngữ
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Text Input Area -->
+                    <div class="flex-1 flex flex-col">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="source-text" class="text-xs font-medium text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                                <i data-lucide="terminal" class="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400"></i>
+                                <span>Văn bản / Lệnh / Ghi chú bản vẽ (Tùy chọn bổ sung)</span>
+                            </label>
+                            <div class="flex items-center gap-2">
+                                <button id="btn-insert-sample-text" class="text-[11px] text-cyan-600 dark:text-cyan-400 hover:text-cyan-500 dark:hover:text-cyan-300 hover:underline font-medium">Điền mẫu câu kỹ thuật</button>
+                                <button id="btn-clear-text" class="text-[11px] text-slate-500 hover:text-slate-800 dark:hover:text-slate-300">Xóa chữ</button>
+                            </div>
+                        </div>
+                        <textarea id="source-text" rows="4" class="w-full flex-1 bg-slate-50 dark:bg-slate-950/70 border border-slate-300 dark:border-slate-800 focus:border-cyan-500/60 rounded-xl p-3 text-sm font-mono text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 resize-none leading-relaxed transition-colors" placeholder="Nhập hoặc dán dòng lệnh, ghi chú trên bản vẽ (VD: CHAMFER DIST 5x45°, FILLET R10, TOLERANCE ±0.05mm, ALL DIMENSIONS IN MM...)"></textarea>
+                    </div>
+
+                    <!-- Primary Translate Button -->
+                    <button id="btn-translate" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold text-sm shadow-lg shadow-cyan-500/25 border border-cyan-400/30 flex items-center justify-center gap-2.5 transition-all active:scale-[0.99] cursor-pointer">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        <span>Dịch chuyên ngành với Gemini</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- RIGHT COLUMN: OUTPUT (6 cols on lg) -->
+            <section class="lg:col-span-6 flex flex-col bg-white/95 dark:bg-cad-panel/90 border border-slate-200 dark:border-slate-800 rounded-xl shadow-lg dark:shadow-2xl overflow-hidden transition-colors duration-200">
+                
+                <!-- Output Header -->
+                <div class="p-3 sm:p-4 bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 transition-colors duration-200">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="cpu" class="w-4 h-4 text-cyan-600 dark:text-cyan-400"></i>
+                        <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">Kết Quả Phân Tích Chuyên Ngành</h2>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span id="result-domain-tag" class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-700">
+                            AutoCAD / Kỹ thuật vẽ
+                        </span>
+                        <button id="btn-copy-result" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 text-xs font-medium transition active:scale-95 disabled:opacity-40" disabled>
+                            <i data-lucide="copy" class="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400"></i>
+                            <span>Copy kết quả</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Output Body -->
+                <div class="p-4 sm:p-5 flex-1 overflow-y-auto flex flex-col gap-5" id="output-container">
+                    
+                    <!-- Placeholder State -->
+                    <div id="output-placeholder" class="flex-1 flex flex-col items-center justify-center text-center py-12 px-4">
+                        <div class="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4 shadow-inner">
+                            <i data-lucide="book-open-check" class="w-8 h-8 text-slate-400 dark:text-slate-600"></i>
+                        </div>
+                        <h3 class="text-base font-medium text-slate-700 dark:text-slate-300 mb-1.5">Sẵn sàng giải mã tài liệu kỹ thuật</h3>
+                        <p class="text-xs text-slate-500 max-w-md leading-relaxed">
+                            Chọn vùng chụp màn hình trên bản vẽ hoặc nhập văn bản chuyên ngành ở cột bên trái. Gemini sẽ tự động chuẩn hóa thuật ngữ, giữ nguyên mã lệnh gốc và giải thích chi tiết thông số.
+                        </p>
+                    </div>
+
+                    <!-- Actual Translation Results (Hidden initially) -->
+                    <div id="output-content" class="hidden flex-col gap-5">
+                        
+                        <!-- Card 1: Standard Technical Translation -->
+                        <div class="bg-slate-50/90 dark:bg-slate-950/70 border border-cyan-500/40 dark:border-cyan-500/30 rounded-xl p-4 shadow-sm dark:shadow-inner relative">
+                            <div class="flex items-center justify-between mb-2.5">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5">
+                                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+                                    1. Bản Dịch Chuẩn Chuyên Ngành
+                                </span>
+                                <span class="text-[10px] font-mono text-slate-500" id="translation-confidence">Độ chính xác ngữ cảnh: 99.4%</span>
+                            </div>
+                            <div id="translated-text-box" class="text-sm sm:text-base text-slate-800 dark:text-slate-100 leading-relaxed whitespace-pre-line font-normal"></div>
+                        </div>
+
+                        <!-- Card 2: Terminology & Command Breakdown Table -->
+                        <div class="bg-slate-50/90 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm">
+                            <div class="px-4 py-3 bg-slate-100/80 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-blue-700 dark:text-blue-400 flex items-center gap-1.5">
+                                    <i data-lucide="table-2" class="w-3.5 h-3.5"></i>
+                                    2. Giải Thích Thuật Ngữ & Lệnh Tắt (Terminology Breakdown)
+                                </span>
+                                <span id="term-count-badge" class="text-[11px] font-mono text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded">0 thuật ngữ</span>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="border-b border-slate-200 dark:border-slate-800 text-[11px] font-mono uppercase text-slate-500 dark:text-slate-400 bg-slate-100/50 dark:bg-slate-900/30">
+                                            <th class="py-2.5 px-3.5">Thuật ngữ / Lệnh</th>
+                                            <th class="py-2.5 px-3.5">Nghĩa chuyên ngành</th>
+                                            <th class="py-2.5 px-3.5">Lệnh tắt / Ghi chú thực tế</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="terminology-tbody" class="divide-y divide-slate-200 dark:divide-slate-800/70 text-xs sm:text-sm">
+                                        <!-- Rows injected dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Engineering Note / Context Tip -->
+                        <div id="engineering-note-box" class="bg-amber-50 dark:bg-amber-500/5 border border-amber-300/70 dark:border-amber-500/20 rounded-xl p-3.5 flex items-start gap-3">
+                            <i data-lucide="lightbulb" class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5"></i>
+                            <div class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                                <span class="font-semibold text-amber-700 dark:text-amber-400">Lưu ý tiêu chuẩn kỹ thuật: </span>
+                                <span id="engineering-note-text"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Translation History -->
+                    <div class="mt-auto pt-4 border-t border-slate-200 dark:border-slate-800/80">
+                        <div class="flex items-center justify-between mb-2.5">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                                <i data-lucide="history" class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400"></i>
+                                Lịch sử dịch gần đây
+                            </span>
+                            <button id="btn-clear-history" class="text-[11px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 transition">Xóa lịch sử</button>
+                        </div>
+                        <div id="history-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[120px] overflow-y-auto pr-1">
+                            <div class="text-xs text-slate-500 dark:text-slate-600 italic col-span-full py-2">Chưa có lịch sử dịch nào trong phiên làm việc.</div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- MODAL OVERLAY FOR SCREEN REGION CROPPING -->
+    <div id="crop-modal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md hidden flex-col">
+        <!-- Cropper Top Bar -->
+        <div class="px-4 py-3 bg-slate-900 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <span class="px-2 py-1 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 text-xs font-mono font-semibold flex items-center gap-1.5">
+                    <i data-lucide="crosshair" class="w-3.5 h-3.5"></i>
+                    REGION CAPTURE
+                </span>
+                <p class="text-xs sm:text-sm text-slate-300">Kéo chuột trên bản vẽ bên dưới để khoanh vùng chữ hoặc ký hiệu kỹ thuật cần dịch</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <span id="crop-dimensions" class="text-xs font-mono text-slate-400 mr-2 hidden sm:inline">0 × 0 px</span>
+                <button id="btn-confirm-crop" class="px-4 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold flex items-center gap-1.5 transition disabled:opacity-40" disabled>
+                    <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                    <span>Xác nhận vùng chọn</span>
+                </button>
+                <button id="btn-cancel-crop" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition">
+                    Hủy (Esc)
+                </button>
+            </div>
+        </div>
+
+        <!-- Cropper Canvas Area -->
+        <div id="crop-workspace" class="flex-1 relative overflow-hidden flex items-center justify-center p-4 select-none">
+            <canvas id="crop-canvas" class="max-w-full max-h-full border border-slate-700 shadow-2xl cursor-crosshair-cad rounded"></canvas>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // =========================================================================
+        // 1. STATE & CONFIGURATION
+        // =========================================================================
+        const state = {
+            theme: localStorage.getItem('techspec_theme') || 'dark',
+            domain: 'autocad',
+            langPair: 'en-vi',
+            apiKey: '',
+            currentImageBase64: null,
+            fullCaptureCanvas: null, // Stores full image for re-cropping
+            isZoomed: false,
+            history: []
+        };
+// ... existing code ... -->
+        // =========================================================================
+        // 2. DOM ELEMENTS
+        // =========================================================================
+        const els = {
+            btnThemeToggle: document.getElementById('btn-theme-toggle'),
+            themeIconSun: document.getElementById('theme-icon-sun'),
+            themeIconMoon: document.getElementById('theme-icon-moon'),
+            themeLabel: document.getElementById('theme-label'),
+            domainSelect: document.getElementById('domain-select'),
+            langSelect: document.getElementById('lang-select'),
+            apiKeyInput: document.getElementById('api-key-input'),
+            modeBadge: document.getElementById('mode-badge'),
+            
+            btnScreenCapture: document.getElementById('btn-screen-capture'),
+            btnSampleCad: document.getElementById('btn-sample-cad'),
+            btnPasteTrigger: document.getElementById('btn-paste-trigger'),
+            
+            imageDropzone: document.getElementById('image-dropzone'),
+            imageEmptyState: document.getElementById('image-empty-state'),
+            imagePreviewWrapper: document.getElementById('image-preview-wrapper'),
+            previewImg: document.getElementById('preview-img'),
+            imageMetaBadge: document.getElementById('image-meta-badge'),
+            
+            btnRecrop: document.getElementById('btn-recrop'),
+            btnZoomImg: document.getElementById('btn-zoom-img'),
+            btnClearImg: document.getElementById('btn-clear-img'),
+            
+            sourceText: document.getElementById('source-text'),
+            btnInsertSampleText: document.getElementById('btn-insert-sample-text'),
+            btnClearText: document.getElementById('btn-clear-text'),
+            btnTranslate: document.getElementById('btn-translate'),
+            
+            scanningOverlay: document.getElementById('scanning-overlay'),
+            scanningDomainText: document.getElementById('scanning-domain-text'),
+            
+            resultDomainTag: document.getElementById('result-domain-tag'),
+            btnCopyResult: document.getElementById('btn-copy-result'),
+            outputPlaceholder: document.getElementById('output-placeholder'),
+            outputContent: document.getElementById('output-content'),
+            translatedTextBox: document.getElementById('translated-text-box'),
+            translationConfidence: document.getElementById('translation-confidence'),
+            termCountBadge: document.getElementById('term-count-badge'),
+            terminologyTbody: document.getElementById('terminology-tbody'),
+            engineeringNoteText: document.getElementById('engineering-note-text'),
+            
+            historyList: document.getElementById('history-list'),
+            btnClearHistory: document.getElementById('btn-clear-history'),
+            
+            cropModal: document.getElementById('crop-modal'),
+            cropCanvas: document.getElementById('crop-canvas'),
+            cropDimensions: document.getElementById('crop-dimensions'),
+            btnConfirmCrop: document.getElementById('btn-confirm-crop'),
+            btnCancelCrop: document.getElementById('btn-cancel-crop')
+        };
+
+        // =========================================================================
+        // 3. UTILITY FUNCTIONS (THEME, TOAST & CLIPBOARD)
+        // =========================================================================
+        function applyTheme(theme) {
+            state.theme = theme;
+            localStorage.setItem('techspec_theme', theme);
+            
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                els.themeIconSun.classList.add('hidden');
+                els.themeIconMoon.classList.remove('hidden');
+                els.themeLabel.textContent = 'Tối';
+            } else {
+                document.documentElement.classList.remove('dark');
+                els.themeIconSun.classList.remove('hidden');
+                els.themeIconMoon.classList.add('hidden');
+                els.themeLabel.textContent = 'Sáng';
+            }
+        }
+
+        // Sync initial theme button UI
+        applyTheme(state.theme);
+
+        els.btnThemeToggle.addEventListener('click', () => {
+            const nextTheme = state.theme === 'dark' ? 'light' : 'dark';
+            applyTheme(nextTheme);
+            showToast(`Đã chuyển sang giao diện ${nextTheme === 'dark' ? 'Tối (CAD Dark)' : 'Sáng (Paper Light)'}`, 'info');
+        });
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const colors = {
+                info: 'bg-white dark:bg-slate-900 border-cyan-500/60 dark:border-cyan-500/50 text-cyan-800 dark:text-cyan-200',
+                success: 'bg-white dark:bg-slate-900 border-emerald-500/60 dark:border-emerald-500/50 text-emerald-800 dark:text-emerald-300',
+                warning: 'bg-white dark:bg-slate-900 border-amber-500/60 dark:border-amber-500/50 text-amber-800 dark:text-amber-300',
+                error: 'bg-white dark:bg-slate-900 border-rose-500/60 dark:border-rose-500/50 text-rose-800 dark:text-rose-300'
+            };
+
+            const icons = {
+                info: 'info',
+                success: 'check-circle',
+                warning: 'alert-triangle',
+                error: 'x-circle'
+            };
+
+            toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-xl border shadow-xl backdrop-blur-md text-xs font-medium transition-all duration-300 translate-y-2 opacity-0 ${colors[type] || colors.info}`;
+            toast.innerHTML = `<i data-lucide="${icons[type] || 'info'}" class="w-4 h-4 shrink-0"></i><span>${message}</span>`;
+            
+            container.appendChild(toast);
+            lucide.createIcons({ root: toast });
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function copyTextToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast('Đã sao chép kết quả dịch vào bộ nhớ tạm!', 'success');
+            } catch (err) {
+                showToast('Không thể sao chép tự động, vui lòng bôi đen và copy thủ công.', 'error');
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // =========================================================================
+        // 4. HEADER CONTROLS & API KEY MODE SWITCHING
+        // =========================================================================
+        els.domainSelect.addEventListener('change', (e) => {
+            state.domain = e.target.value;
+            const domainName = e.target.options[e.target.selectedIndex].text;
+            els.resultDomainTag.textContent = domainName;
+            els.scanningDomainText.textContent = `Ngữ cảnh: ${domainName}`;
+        });
+
+        els.langSelect.addEventListener('change', (e) => {
+            state.langPair = e.target.value;
+        });
+
+        els.apiKeyInput.addEventListener('input', (e) => {
+            state.apiKey = e.target.value.trim();
+            if (state.apiKey.length > 10) {
+                els.modeBadge.textContent = 'GEMINI LIVE';
+                els.modeBadge.className = 'ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border border-cyan-500/40 whitespace-nowrap';
+            } else {
+                els.modeBadge.textContent = 'DEMO MOCK';
+                els.modeBadge.className = 'ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 whitespace-nowrap';
+            }
+        });
+
+        // =========================================================================
+        // 5. MOCK AUTOCAD DRAWING GENERATOR (ADAPTS TO LIGHT / DARK THEME)
+        // =========================================================================
+        function generateMockCADCanvas() {
+            const isDark = state.theme === 'dark';
+            const canvas = document.createElement('canvas');
+            canvas.width = 1100;
+            canvas.height = 680;
+            const ctx = canvas.getContext('2d');
+
+            // AutoCAD Model Space (Dark) vs Paper Space Layout (Light)
+            ctx.fillStyle = isDark ? '#141923' : '#f8fafc';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Subtle Grid
+            ctx.strokeStyle = isDark ? '#1f2937' : '#e2e8f0';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 25) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 25) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+
+            // AutoCAD Top Ribbon Mock Header
+            ctx.fillStyle = isDark ? '#1e293b' : '#e2e8f0';
+            ctx.fillRect(0, 0, canvas.width, 42);
+            ctx.fillStyle = isDark ? '#38bdf8' : '#0284c7';
+            ctx.font = 'bold 14px JetBrains Mono, monospace';
+            ctx.fillText(`AUTOCAD MECHANICAL 2026 - [SHAFT_HOUSING_ASSY.dwg] (${isDark ? 'Model' : 'Layout1'})`, 20, 26);
+
+            // Outer Border Frame
+            ctx.strokeStyle = isDark ? '#e2e8f0' : '#0f172a';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(30, 60, canvas.width - 60, canvas.height - 95);
+
+            // Mechanical Part Drawing (Section View)
+            ctx.save();
+            ctx.translate(120, 140);
+
+            // Centerline (Red Dash-Dot)
+            ctx.strokeStyle = isDark ? '#f43f5e' : '#dc2626';
+            ctx.setLineDash([18, 5, 3, 5]);
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(-30, 150);
+            ctx.lineTo(520, 150);
+            ctx.stroke();
+
+            // Main Part Contour (Cyan/Blue Solid Lines)
+            ctx.setLineDash([]);
+            ctx.strokeStyle = isDark ? '#38bdf8' : '#0369a1';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(20, 70);
+            ctx.lineTo(180, 70);
+            ctx.lineTo(180, 40);
+            ctx.lineTo(360, 40);
+            ctx.lineTo(375, 55); // Chamfer
+            ctx.lineTo(375, 245);
+            ctx.lineTo(360, 260); // Chamfer
+            ctx.lineTo(180, 260);
+            ctx.lineTo(180, 230);
+            ctx.lineTo(20, 230);
+            ctx.closePath();
+            ctx.stroke();
+
+            // Inner Bore (Hidden Lines - Dashed)
+            ctx.strokeStyle = isDark ? '#facc15' : '#b45309';
+            ctx.setLineDash([8, 6]);
+            ctx.lineWidth = 1.8;
+            ctx.strokeRect(20, 110, 355, 80);
+
+            // Dimension Lines & Technical Callouts
+            ctx.setLineDash([]);
+            ctx.strokeStyle = isDark ? '#4ade80' : '#15803d';
+            ctx.fillStyle = isDark ? '#4ade80' : '#15803d';
+            ctx.font = 'bold 13px JetBrains Mono, monospace';
+
+            // Callout 1: Chamfer
+            ctx.beginPath();
+            ctx.moveTo(368, 48);
+            ctx.lineTo(430, 10);
+            ctx.lineTo(610, 10);
+            ctx.stroke();
+            ctx.fillText('CHAMFER 5x45° (ALL EDGES)', 435, 4);
+
+            // Callout 2: Fillet
+            ctx.beginPath();
+            ctx.moveTo(180, 70);
+            ctx.lineTo(120, 15);
+            ctx.lineTo(-10, 15);
+            ctx.stroke();
+            ctx.fillText('FILLET R10', -5, 8);
+
+            // Callout 3: Bore Tolerance
+            ctx.beginPath();
+            ctx.moveTo(260, 110);
+            ctx.lineTo(310, 190);
+            ctx.stroke();
+            ctx.fillText('Ø80 H7 (+0.030 / 0.000)', 200, 285);
+
+            ctx.restore();
+
+            // Engineering Notes Block (Bottom Right)
+            const noteX = 630;
+            const noteY = 390;
+            ctx.strokeStyle = isDark ? '#94a3b8' : '#334155';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(noteX, noteY, 410, 215);
+
+            ctx.fillStyle = isDark ? '#38bdf8' : '#0284c7';
+            ctx.font = 'bold 14px JetBrains Mono, monospace';
+            ctx.fillText('GENERAL TECHNICAL NOTES:', noteX + 15, noteY + 28);
+
+            ctx.fillStyle = isDark ? '#f8fafc' : '#0f172a';
+            ctx.font = '13px JetBrains Mono, monospace';
+            const notes = [
+                '1. ALL DIMENSIONS ARE IN MILLIMETERS.',
+                '2. MATERIAL: SUS304 STAINLESS STEEL.',
+                '3. SURFACE ROUGHNESS: Ra 1.6 µm.',
+                '4. GENERAL TOLERANCE: ISO 2768-mK.',
+                '5. REMOVE ALL BURRS & SHARP EDGES.',
+                '6. ORTHO MODE: ON | LAYER: MECHANICAL_01'
+            ];
+            notes.forEach((line, idx) => {
+                ctx.fillText(line, noteX + 15, noteY + 58 + (idx * 24));
+            });
+
+            return canvas;
+        }
+
+        // =========================================================================
+        // 6. SCREEN CAPTURE & INTERACTIVE REGION CROPPER
+        // =========================================================================
+        let cropState = {
+            isDrawing: false,
+            startX: 0,
+            startY: 0,
+            endX: 0,
+            endY: 0,
+            scaleX: 1,
+            scaleY: 1
+        };
+
+        function openCropModal(sourceCanvas) {
+            state.fullCaptureCanvas = sourceCanvas;
+            els.cropModal.classList.remove('hidden');
+            els.cropModal.classList.add('flex');
+            els.btnConfirmCrop.disabled = true;
+            els.cropDimensions.textContent = '0 × 0 px';
+
+            const canvas = els.cropCanvas;
+            canvas.width = sourceCanvas.width;
+            canvas.height = sourceCanvas.height;
+
+            cropState.isDrawing = false;
+            cropState.startX = 0;
+            cropState.startY = 0;
+            cropState.endX = 0;
+            cropState.endY = 0;
+
+            renderCropCanvas();
+        }
+
+        function closeCropModal() {
+            els.cropModal.classList.add('hidden');
+            els.cropModal.classList.remove('flex');
+        }
+
+        function renderCropCanvas() {
+            if (!state.fullCaptureCanvas) return;
+            const canvas = els.cropCanvas;
+            const ctx = canvas.getContext('2d');
+
+            // Draw full source image
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(state.fullCaptureCanvas, 0, 0);
+
+            const x = Math.min(cropState.startX, cropState.endX);
+            const y = Math.min(cropState.startY, cropState.endY);
+            const w = Math.abs(cropState.endX - cropState.startX);
+            const h = Math.abs(cropState.endY - cropState.startY);
+
+            if (w > 5 && h > 5) {
+                // Dim outside area
+                ctx.fillStyle = 'rgba(2, 6, 23, 0.65)';
+                ctx.fillRect(0, 0, canvas.width, y);
+                ctx.fillRect(0, y + h, canvas.width, canvas.height - (y + h));
+                ctx.fillRect(0, y, x, h);
+                ctx.fillRect(x + w, y, canvas.width - (x + w), h);
+
+                // Selection Border (CAD Cyan)
+                ctx.strokeStyle = '#06b6d4';
+                ctx.lineWidth = 2.5;
+                ctx.setLineDash([6, 4]);
+                ctx.strokeRect(x, y, w, h);
+                ctx.setLineDash([]);
+
+                // Corner Handles
+                ctx.fillStyle = '#38bdf8';
+                const hs = 8;
+                ctx.fillRect(x - hs/2, y - hs/2, hs, hs);
+                ctx.fillRect(x + w - hs/2, y - hs/2, hs, hs);
+                ctx.fillRect(x - hs/2, y + h - hs/2, hs, hs);
+                ctx.fillRect(x + w - hs/2, y + h - hs/2, hs, hs);
+
+                els.cropDimensions.textContent = `${Math.round(w)} × ${Math.round(h)} px`;
+                els.btnConfirmCrop.disabled = false;
+            }
+        }
+
+        function getCanvasCoordinates(e) {
+            const rect = els.cropCanvas.getBoundingClientRect();
+            const scaleX = els.cropCanvas.width / rect.width;
+            const scaleY = els.cropCanvas.height / rect.height;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: Math.max(0, Math.min(els.cropCanvas.width, (clientX - rect.left) * scaleX)),
+                y: Math.max(0, Math.min(els.cropCanvas.height, (clientY - rect.top) * scaleY))
+            };
+        }
+
+        els.cropCanvas.addEventListener('mousedown', (e) => {
+            const pos = getCanvasCoordinates(e);
+            cropState.isDrawing = true;
+            cropState.startX = pos.x;
+            cropState.startY = pos.y;
+            cropState.endX = pos.x;
+            cropState.endY = pos.y;
+            renderCropCanvas();
+        });
+
+        els.cropCanvas.addEventListener('mousemove', (e) => {
+            if (!cropState.isDrawing) return;
+            const pos = getCanvasCoordinates(e);
+            cropState.endX = pos.x;
+            cropState.endY = pos.y;
+            renderCropCanvas();
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (cropState.isDrawing) {
+                cropState.isDrawing = false;
+                renderCropCanvas();
+            }
+        });
+
+        // Touch support for mobile/tablet cropping
+        els.cropCanvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const pos = getCanvasCoordinates(e);
+            cropState.isDrawing = true;
+            cropState.startX = pos.x;
+            cropState.startY = pos.y;
+            cropState.endX = pos.x;
+            cropState.endY = pos.y;
+        }, { passive: false });
+
+        els.cropCanvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (!cropState.isDrawing) return;
+            const pos = getCanvasCoordinates(e);
+            cropState.endX = pos.x;
+            cropState.endY = pos.y;
+            renderCropCanvas();
+        }, { passive: false });
+
+        els.cropCanvas.addEventListener('touchend', () => {
+            cropState.isDrawing = false;
+            renderCropCanvas();
+        });
+
+        // Confirm Crop & Extract Region Base64
+        els.btnConfirmCrop.addEventListener('click', () => {
+            const x = Math.min(cropState.startX, cropState.endX);
+            const y = Math.min(cropState.startY, cropState.endY);
+            const w = Math.abs(cropState.endX - cropState.startX);
+            const h = Math.abs(cropState.endY - cropState.startY);
+
+            if (w < 10 || h < 10) {
+                showToast('Vùng chọn quá nhỏ, vui lòng kéo vùng rộng hơn.', 'warning');
+                return;
+            }
+
+            const croppedCanvas = document.createElement('canvas');
+            croppedCanvas.width = w;
+            croppedCanvas.height = h;
+            const ctx = croppedCanvas.getContext('2d');
+            ctx.drawImage(state.fullCaptureCanvas, x, y, w, h, 0, 0, w, h);
+
+            const dataUrl = croppedCanvas.toDataURL('image/png');
+            setPreviewImage(dataUrl, `Vùng cắt: ${Math.round(w)}×${Math.round(h)}px`);
+            closeCropModal();
+            showToast('Đã trích xuất vùng bản vẽ! Nhấn "Dịch chuyên ngành" để phân tích.', 'success');
+        });
+
+        els.btnCancelCrop.addEventListener('click', closeCropModal);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !els.cropModal.classList.contains('hidden')) {
+                closeCropModal();
+            }
+        });
+
+        // Screen Capture Button (getDisplayMedia with graceful fallback)
+        els.btnScreenCapture.addEventListener('click', async () => {
+            try {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+                    throw new Error('Trình duyệt không hỗ trợ getDisplayMedia');
+                }
+                const stream = await navigator.mediaDevices.getDisplayMedia({
+                    video: { cursor: 'always' },
+                    audio: false
+                });
+
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                await video.play();
+
+                // Wait brief frame for crisp render
+                await new Promise(r => setTimeout(r, 200));
+
+                const captureCanvas = document.createElement('canvas');
+                captureCanvas.width = video.videoWidth;
+                captureCanvas.height = video.videoHeight;
+                captureCanvas.getContext('2d').drawImage(video, 0, 0);
+
+                // Stop screen sharing stream immediately after capture
+                stream.getTracks().forEach(track => track.stop());
+
+                openCropModal(captureCanvas);
+            } catch (err) {
+                console.warn('Screen capture fallback triggered:', err);
+                showToast('Trình duyệt chặn chia sẻ màn hình hoặc bạn đã hủy — Đang mở Bản vẽ CAD mẫu để bạn thử tính năng cắt vùng!', 'warning');
+                const mockCanvas = generateMockCADCanvas();
+                openCropModal(mockCanvas);
+            }
+        });
+
+        // Sample CAD Drawing Button
+        els.btnSampleCad.addEventListener('click', () => {
+            const mockCanvas = generateMockCADCanvas();
+            openCropModal(mockCanvas);
+        });
+
+        // =========================================================================
+        // 7. IMAGE PREVIEW, CLIPBOARD PASTE (CTRL+V) & ZOOM CONTROLS
+        // =========================================================================
+        function setPreviewImage(dataUrl, metaText = 'Ảnh từ Clipboard') {
+            state.currentImageBase64 = dataUrl;
+            els.previewImg.src = dataUrl;
+            els.imageMetaBadge.textContent = metaText;
+            els.imageEmptyState.classList.add('hidden');
+            els.imagePreviewWrapper.classList.remove('hidden');
+            state.isZoomed = false;
+            els.previewImg.style.transform = 'scale(1)';
+        }
+
+        function clearPreviewImage() {
+            state.currentImageBase64 = null;
+            els.previewImg.src = '';
+            els.imagePreviewWrapper.classList.add('hidden');
+            els.imageEmptyState.classList.remove('hidden');
+        }
+
+        // Global Paste Event Listener (Ctrl+V)
+        window.addEventListener('paste', (e) => {
+            const items = (e.clipboardData || e.originalEvent?.clipboardData)?.items;
+            if (!items) return;
+
+            for (const item of items) {
+                if (item.type.indexOf('image') !== -1) {
+                    e.preventDefault();
+                    const blob = item.getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            canvas.width = img.width;
+                            canvas.height = img.height;
+                            canvas.getContext('2d').drawImage(img, 0, 0);
+                            state.fullCaptureCanvas = canvas;
+                            setPreviewImage(event.target.result, `Ảnh dán Clipboard (${img.width}×${img.height}px)`);
+                            showToast('Đã dán ảnh từ Clipboard! Bạn có thể bấm nút Cắt (Crop) trên ảnh nếu muốn chọn vùng nhỏ hơn.', 'success');
+                        };
+                        img.src = event.target.result;
+                    };
+                    reader.readAsDataURL(blob);
+                    return;
+                }
+            }
+        });
+
+        els.btnPasteTrigger.addEventListener('click', async () => {
+            try {
+                const clipboardItems = await navigator.clipboard.read();
+                for (const item of clipboardItems) {
+                    const imageType = item.types.find(t => t.startsWith('image/'));
+                    if (imageType) {
+                        const blob = await item.getType(imageType);
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                            setPreviewImage(ev.target.result, 'Ảnh dán từ Clipboard');
+                            showToast('Đã tải ảnh từ bộ nhớ tạm!', 'success');
+                        };
+                        reader.readAsDataURL(blob);
+                        return;
+                    }
+                }
+                showToast('Không tìm thấy ảnh trong Clipboard. Hãy chụp màn hình (Win+Shift+S) rồi nhấn Ctrl+V.', 'info');
+            } catch (err) {
+                showToast('Vui lòng nhấn tổ hợp phím Ctrl + V trực tiếp trên trang để dán ảnh.', 'info');
+            }
+        });
+
+        els.btnRecrop.addEventListener('click', () => {
+            if (state.fullCaptureCanvas) {
+                openCropModal(state.fullCaptureCanvas);
+            } else if (state.currentImageBase64) {
+                const img = new Image();
+                img.onload = () => {
+                    const c = document.createElement('canvas');
+                    c.width = img.width;
+                    c.height = img.height;
+                    c.getContext('2d').drawImage(img, 0, 0);
+                    openCropModal(c);
+                };
+                img.src = state.currentImageBase64;
+            }
+        });
+
+        els.btnZoomImg.addEventListener('click', () => {
+            state.isZoomed = !state.isZoomed;
+            els.previewImg.style.transform = state.isZoomed ? 'scale(1.5)' : 'scale(1)';
+            els.previewImg.style.transformOrigin = 'center center';
+        });
+
+        els.btnClearImg.addEventListener('click', () => {
+            clearPreviewImage();
+            showToast('Đã xóa ảnh vùng chọn.', 'info');
+        });
+
+        // Sample Text Helpers
+        const sampleTextsByDomain = {
+            autocad: 'CHAMFER DIST 5x45° (ALL EDGES), FILLET R10, ORTHO MODE: ON, HATCH PATTERN: ANSI31, ALL DIMENSIONS IN MILLIMETERS.',
+            mechanical: 'MATERIAL: SUS304 STAINLESS STEEL. SURFACE ROUGHNESS: Ra 1.6 µm. BORE TOLERANCE: Ø80 H7 (+0.030/0.000). REMOVE ALL BURRS.',
+            electrical: '3-PHASE INDUCTION MOTOR 380VAC 50Hz, MCCB 100A 3P, EMERGENCY STOP PUSHBUTTON (NC), PLC DIGITAL INPUT MODULE 24VDC.',
+            construction: 'REINFORCED CONCRETE SLAB THK 200mm, GRADE C30/37, REBAR Ø16 @150mm C/C BOTH WAYS, FINISH FLOOR LEVEL (FFL) +3.600m.',
+            it: 'ASYNCHRONOUS WEBHOOK PAYLOAD OVER TLS 1.3, IDEMPOTENCY KEY REQUIRED IN HEADER, EXPONENTIAL BACKOFF RETRY POLICY.'
+        };
+
+        els.btnInsertSampleText.addEventListener('click', () => {
+            els.sourceText.value = sampleTextsByDomain[state.domain] || sampleTextsByDomain.autocad;
+            showToast('Đã điền mẫu ghi chú kỹ thuật theo chuyên ngành.', 'info');
+        });
+
+        els.btnClearText.addEventListener('click', () => {
+            els.sourceText.value = '';
+        });
+
+        // =========================================================================
+        // 8. GEMINI API INTEGRATION & DOMAIN-AWARE MOCK AI ENGINE
+        // =========================================================================
+        async function callGeminiAPI(apiKey, domainLabel, langLabel, textInput, imageBase64) {
+            const modelsToTry = ['gemini-3-flash-preview', 'gemini-3.8-flash', 'gemini-2.5-flash-lite'];
+            
+            const systemPrompt = `Bạn là chuyên gia biên dịch kỹ thuật cao cấp trong lĩnh vực: "${domainLabel}".
+Nhiệm vụ: Đọc nội dung từ hình ảnh bản vẽ/tài liệu (nếu có) và văn bản đính kèm, sau đó dịch sang tiếng Việt chuẩn xác theo thuật ngữ ngành (${langLabel}).
+Quy tắc bắt buộc:
+1. Giữ nguyên các mã lệnh gốc (VD: CHAMFER, FILLET, ORTHO, LAYER, Ø, H7, SUS304, MCCB...) trong ngoặc đơn để kỹ sư dễ đối chiếu.
+2. Trả về kết quả CHỈ DƯỚI DẠNG JSON hợp lệ (không bọc markdown \`\`\`json) theo đúng cấu trúc:
+{
+  "translation": "Bản dịch tiếng Việt mượt mà, chuẩn văn phong bản vẽ kỹ thuật",
+  "terms": [
+    { "term": "Thuật ngữ/Lệnh gốc", "meaning": "Nghĩa chuyên ngành tiếng Việt", "note": "Lệnh tắt CAD / Ý nghĩa tiêu chuẩn kỹ thuật" }
+  ],
+  "engineeringNote": "Một lưu ý quan trọng về tiêu chuẩn kỹ thuật, gia công hoặc thi công liên quan đến đoạn nội dung này."
+}`;
+
+            const parts = [{ text: systemPrompt }];
+            if (textInput) {
+                parts.push({ text: `Văn bản cần dịch:\n${textInput}` });
+            } else {
+                parts.push({ text: `Hãy trích xuất toàn bộ chữ và ký hiệu kỹ thuật trong vùng ảnh này và dịch sang tiếng Việt chuyên ngành.` });
+            }
+
+            if (imageBase64) {
+                const base64Data = imageBase64.split(',')[1];
+                const mimeType = imageBase64.substring(imageBase64.indexOf(':') + 1, imageBase64.indexOf(';'));
+                parts.push({
+                    inlineData: {
+                        mimeType: mimeType,
+                        data: base64Data
+                    }
+                });
+            }
+
+            let lastError = null;
+            for (const modelName of modelsToTry) {
+                const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(apiKey)}`;
+                try {
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts }],
+                            generationConfig: {
+                                temperature: 0.2,
+                                responseMimeType: "application/json"
+                            }
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errData = await response.json().catch(() => ({}));
+                        const errMsg = errData.error?.message || `Lỗi HTTP ${response.status}`;
+                        // Nếu lỗi liên quan đến tên model không khả dụng hoặc không tìm thấy, thử model kế tiếp
+                        if (errMsg.toLowerCase().includes('no longer available') || errMsg.toLowerCase().includes('not found') || response.status === 404) {
+                            lastError = new Error(errMsg);
+                            continue;
+                        }
+                        throw new Error(errMsg);
+                    }
+
+                    const data = await response.json();
+                    const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+                    const cleanedJson = rawText.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim();
+                    const parsed = JSON.parse(cleanedJson);
+                    parsed._usedModel = modelName;
+                    return parsed;
+                } catch (err) {
+                    lastError = err;
+                    if (!err.message.toLowerCase().includes('no longer available') && !err.message.toLowerCase().includes('not found')) {
+                        throw err;
+                    }
+                }
+            }
+
+            throw lastError || new Error('Không thể kết nối tới các phiên bản model Gemini.');
+        }
+
+        function generateMockTranslation(domain, textInput, hasImage) {
+            const lowerText = (textInput || '').toLowerCase();
+
+            // Smart keyword matching for realistic demo experience
+            if (domain === 'autocad' || lowerText.includes('chamfer') || lowerText.includes('fillet') || hasImage) {
+                return {
+                    translation: `• Vát mép (CHAMFER) kích thước 5×45° cho tất cả các cạnh.\n• Bo tròn góc (FILLET) bán kính R10.\n• Kích thước lỗ lắp ghép: Ø80 H7 (+0.030 / 0.000) — Lắp lỏng hệ lỗ cơ bản.\n• Chế độ vẽ thẳng góc (ORTHO MODE): BẬT | Lớp bản vẽ (LAYER): MECHANICAL_01.\n• Ghi chú chung: Tất cả kích thước tính bằng milimét (mm). Vật liệu thép không gỉ SUS304. Độ nhám bề mặt Ra 1.6 µm. Dung sai chung theo tiêu chuẩn ISO 2768-mK. Làm sạch ba via và cạnh sắc.`,
+                    terms: [
+                        { term: 'CHAMFER (CHA)', meaning: 'Vát mép cạnh sắc', note: 'Lệnh tắt: CHA | Thường dùng góc 45° để dễ lắp ghép trục/lỗ' },
+                        { term: 'FILLET (F)', meaning: 'Bo tròn góc lượn', note: 'Lệnh tắt: F | Giảm tập trung ứng suất tại góc vuông' },
+                        { term: 'Ø80 H7', meaning: 'Đường kính danh nghĩa 80mm, cấp chính xác lỗ H7', note: 'Dung sai cho phép từ +0.000 đến +0.030 mm' },
+                        { term: 'Ra 1.6 µm', meaning: 'Độ nhám bề mặt trung bình số học 1.6 micromet', note: 'Tương đương gia công tiện tinh hoặc mài thô' },
+                        { term: 'Remove all burrs', meaning: 'Tẩy sạch ba via / bavia gia công', note: 'Bắt buộc sau phay/tiện để tránh đứt tay và kẹt chi tiết' },
+                        { term: 'ORTHO MODE (F8)', meaning: 'Chế độ khóa con trỏ theo phương vuông góc X/Y', note: 'Phím tắt: F8 trong AutoCAD' }
+                    ],
+                    engineeringNote: 'Theo tiêu chuẩn ISO 2768-mK, các kích thước dài không ghi dung sai riêng sẽ áp dụng cấp chính xác trung bình (m), và các thông số hình học (độ thẳng, độ phẳng, độ vuông góc) áp dụng cấp K.'
+                };
+            }
+
+            if (domain === 'electrical') {
+                return {
+                    translation: `Động cơ không đồng bộ 3 pha 380VAC 50Hz, bảo vệ bằng Aptomat khối (MCCB) 100A 3 cực. Nút nhấn dừng khẩn cấp (Emergency Stop) sử dụng tiếp điểm thường đóng (NC). Mô-đun ngõ vào số PLC (Digital Input) điện áp 24VDC.`,
+                    terms: [
+                        { term: '3-Phase Induction Motor', meaning: 'Động cơ cảm ứng (không đồng bộ) 3 pha', note: 'Đấu sao (Y) hoặc tam giác (Δ) tùy điện áp lưới' },
+                        { term: 'MCCB 100A 3P', meaning: 'Aptomat dạng khối 3 cực, dòng định mức 100A', note: 'Molded Case Circuit Breaker - Bảo vệ quá tải & ngắn mạch' },
+                        { term: 'NC (Normally Closed)', meaning: 'Tiếp điểm thường đóng', note: 'Tiêu chuẩn an toàn bắt buộc cho nút E-Stop (đứt dây sẽ ngắt mạch)' },
+                        { term: 'PLC DI 24VDC', meaning: 'Ngõ vào số bộ điều khiển lập trình 24V một chiều', note: 'Kiểm tra đấu nối kiểu Sink (NPN) hoặc Source (PNP)' }
+                    ],
+                    engineeringNote: 'Với nút nhấn dừng khẩn cấp (E-Stop), tiêu chuẩn IEC 60204-1 yêu cầu sử dụng tiếp điểm thường đóng (NC) tác động mở cưỡng bức để đảm bảo an toàn khi xảy ra sự cố đứt cáp tín hiệu.'
+                };
+            }
+
+            if (domain === 'construction') {
+                return {
+                    translation: `Sàn bê tông cốt thép (BTCT) dày 200mm, mác bê tông cấp độ bền C30/37. Bố trí cốt thép đường kính Ø16 khoảng cách a150mm theo cả hai phương. Cao độ hoàn thiện sàn (FFL): +3.600m.`,
+                    terms: [
+                        { term: 'THK 200mm', meaning: 'Chiều dày kết cấu 200 milimét', note: 'Viết tắt của Thickness' },
+                        { term: 'Grade C30/37', meaning: 'Cấp độ bền chịu nén bê tông (tiêu chuẩn Eurocode)', note: 'Tương đương khoảng Mác M400 theo TCVN cũ' },
+                        { term: '@150mm C/C', meaning: 'Khoảng cách tim-đến-tim các thanh thép là 150mm', note: 'Center-to-Center (a150)' },
+                        { term: 'FFL +3.600m', meaning: 'Cao độ mặt sàn hoàn thiện +3.600 mét', note: 'Finished Floor Level (đã bao gồm lớp vữa lót & gạch lát)' }
+                    ],
+                    engineeringNote: 'Cần phân biệt rõ FFL (Finished Floor Level - cao độ hoàn thiện) và SSL (Structural Slab Level - cao độ mặt bê tông kết cấu thô) trước khi đổ bê tông sàn.'
+                };
+            }
+
+            return {
+                translation: `Bản dịch chuẩn hóa cho đoạn tài liệu kỹ thuật: "${textInput || 'Dữ liệu trích xuất từ vùng ảnh chụp'}" trong lĩnh vực ${els.domainSelect.options[els.domainSelect.selectedIndex].text}. Các thông số kỹ thuật, đơn vị đo lường và ký hiệu tiêu chuẩn đã được giữ nguyên để đảm bảo tính chính xác khi triển khai.`,
+                terms: [
+                    { term: 'SPECIFICATION', meaning: 'Thông số kỹ thuật / Quy cách', note: 'Tài liệu quy định tiêu chuẩn nghiệm thu' },
+                    { term: 'TOLERANCE', meaning: 'Dung sai cho phép', note: 'Giới hạn sai lệch kích thước/thông số' },
+                    { term: 'REFERENCE (REF)', meaning: 'Kích thước / Thông số tham chiếu', note: 'Không dùng để kiểm tra nghiệm thu trực tiếp' }
+                ],
+                engineeringNote: 'Nhập Gemini API Key ở thanh công cụ phía trên để kích hoạt mô hình Gemini 2.5 Flash dịch trực tiếp mọi ảnh chụp màn hình và tài liệu thực tế của bạn.'
+            };
+        }
+
+        // =========================================================================
+        // 9. RENDER RESULTS & TRANSLATION ORCHESTRATION
+        // =========================================================================
+        function renderTranslationResult(resultObj, sourceSnippet) {
+            els.outputPlaceholder.classList.add('hidden');
+            els.outputContent.classList.remove('hidden');
+            els.outputContent.classList.add('flex');
+            els.btnCopyResult.disabled = false;
+
+            els.translatedTextBox.textContent = resultObj.translation || '';
+            els.translationConfidence.textContent = state.apiKey.length > 10 ? `Nguồn: ${resultObj._usedModel || 'Gemini Live'}` : 'Chế độ: Demo Mock AI';
+            
+            const terms = Array.isArray(resultObj.terms) ? resultObj.terms : [];
+            els.termCountBadge.textContent = `${terms.length} thuật ngữ`;
+            els.terminologyTbody.innerHTML = '';
+
+            terms.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-100/70 dark:hover:bg-slate-900/60 transition';
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3.5 font-mono font-semibold text-cyan-700 dark:text-cyan-400 align-top">${escapeHtml(item.term)}</td>
+                    <td class="py-2.5 px-3.5 text-slate-800 dark:text-slate-200 font-medium align-top">${escapeHtml(item.meaning)}</td>
+                    <td class="py-2.5 px-3.5 text-slate-500 dark:text-slate-400 text-xs align-top">${escapeHtml(item.note)}</td>
+                `;
+                els.terminologyTbody.appendChild(tr);
+            });
+
+            els.engineeringNoteText.textContent = resultObj.engineeringNote || 'Luôn đối chiếu đơn vị đo lường (mm/inch) trên khung tên bản vẽ trước khi gia công.';
+
+            // Save to session history
+            addToHistory({
+                domain: els.domainSelect.options[els.domainSelect.selectedIndex].text,
+                snippet: sourceSnippet,
+                result: resultObj,
+                time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+            });
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function addToHistory(entry) {
+            state.history.unshift(entry);
+            if (state.history.length > 6) state.history.pop();
+            renderHistoryList();
+        }
+
+        function renderHistoryList() {
+            if (state.history.length === 0) {
+                els.historyList.innerHTML = `<div class="text-xs text-slate-500 dark:text-slate-600 italic col-span-full py-2">Chưa có lịch sử dịch nào trong phiên làm việc.</div>`;
+                return;
+            }
+
+            els.historyList.innerHTML = '';
+            state.history.forEach((item) => {
+                const card = document.createElement('button');
+                card.className = 'text-left p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-slate-950/70 dark:hover:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-cyan-500/50 transition flex flex-col gap-1 group';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between w-full">
+                        <span class="text-[10px] font-mono text-cyan-700 dark:text-cyan-400 truncate max-w-[70%]">${escapeHtml(item.domain)}</span>
+                        <span class="text-[10px] font-mono text-slate-400 dark:text-slate-500">${item.time}</span>
+                    </div>
+                    <p class="text-xs text-slate-700 dark:text-slate-300 truncate w-full font-mono group-hover:text-slate-900 dark:group-hover:text-white">${escapeHtml(item.snippet)}</p>
+                `;
+                card.addEventListener('click', () => {
+                    renderTranslationResultWithoutSaving(item.result);
+                    showToast('Đã khôi phục kết quả từ lịch sử.', 'info');
+                });
+                els.historyList.appendChild(card);
+            });
+        }
+
+        function renderTranslationResultWithoutSaving(resultObj) {
+            els.outputPlaceholder.classList.add('hidden');
+            els.outputContent.classList.remove('hidden');
+            els.outputContent.classList.add('flex');
+            els.btnCopyResult.disabled = false;
+            els.translatedTextBox.textContent = resultObj.translation || '';
+            const terms = Array.isArray(resultObj.terms) ? resultObj.terms : [];
+            els.termCountBadge.textContent = `${terms.length} thuật ngữ`;
+            els.terminologyTbody.innerHTML = '';
+            terms.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-100/70 dark:hover:bg-slate-900/60 transition';
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3.5 font-mono font-semibold text-cyan-700 dark:text-cyan-400 align-top">${escapeHtml(item.term)}</td>
+                    <td class="py-2.5 px-3.5 text-slate-800 dark:text-slate-200 font-medium align-top">${escapeHtml(item.meaning)}</td>
+                    <td class="py-2.5 px-3.5 text-slate-500 dark:text-slate-400 text-xs align-top">${escapeHtml(item.note)}</td>
+                `;
+                els.terminologyTbody.appendChild(tr);
+            });
+            els.engineeringNoteText.textContent = resultObj.engineeringNote || '';
+        }
+
+        els.btnClearHistory.addEventListener('click', () => {
+            state.history = [];
+            renderHistoryList();
+            showToast('Đã xóa lịch sử dịch.', 'info');
+        });
+
+        // Main Translate Button Handler
+        els.btnTranslate.addEventListener('click', async () => {
+            const textVal = els.sourceText.value.trim();
+            const hasImg = Boolean(state.currentImageBase64);
+
+            if (!textVal && !hasImg) {
+                showToast('Vui lòng chụp vùng bản vẽ, dán ảnh hoặc nhập văn bản cần dịch!', 'warning');
+                return;
+            }
+
+            // Show scanning animation
+            els.scanningOverlay.classList.remove('hidden');
+            els.btnTranslate.disabled = true;
+            els.btnTranslate.classList.add('opacity-70');
+
+            const domainLabel = els.domainSelect.options[els.domainSelect.selectedIndex].text;
+            const langLabel = els.langSelect.options[els.langSelect.selectedIndex].text;
+            const snippet = textVal ? textVal.slice(0, 45) : '[Vùng ảnh bản vẽ kỹ thuật]';
+
+            try {
+                let result;
+                if (state.apiKey.length > 10) {
+                    // Live Gemini API Call
+                    result = await callGeminiAPI(state.apiKey, domainLabel, langLabel, textVal, state.currentImageBase64);
+                } else {
+                    // Simulated network delay for realistic AI scan feel
+                    await new Promise(r => setTimeout(r, 1100));
+                    result = generateMockTranslation(state.domain, textVal, hasImg);
+                }
+
+                renderTranslationResult(result, snippet);
+                showToast('Phân tích & dịch thuật ngữ hoàn tất!', 'success');
+            } catch (err) {
+                console.error(err);
+                showToast(`Lỗi khi gọi Gemini API: ${err.message}`, 'error');
+            } finally {
+                els.scanningOverlay.classList.add('hidden');
+                els.btnTranslate.disabled = false;
+                els.btnTranslate.classList.remove('opacity-70');
+            }
+        });
+
+        // Copy Result Button
+        els.btnCopyResult.addEventListener('click', () => {
+            const mainText = els.translatedTextBox.textContent;
+            const rows = Array.from(els.terminologyTbody.querySelectorAll('tr')).map(tr => {
+                const cells = tr.querySelectorAll('td');
+                return `- ${cells[0]?.textContent}: ${cells[1]?.textContent} (${cells[2]?.textContent})`;
+            }).join('\n');
+
+            const fullCopy = `=== BẢN DỊCH CHUYÊN NGÀNH (${els.resultDomainTag.textContent}) ===\n${mainText}\n\n=== THUẬT NGỮ CHI TIẾT ===\n${rows}`;
+            copyTextToClipboard(fullCopy);
+        });
+    </script>
+</body>
+</html>
