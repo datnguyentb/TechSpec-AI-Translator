@@ -189,9 +189,12 @@
                 <!-- API Key Input & Mode Indicator -->
                 <div class="flex items-center bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-2.5 py-1.5 focus-within:border-cyan-500/60 transition">
                     <i data-lucide="key" class="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 mr-2 shrink-0"></i>
-                    <input type="password" id="api-key-input" placeholder="Gemini API Key (Trống = Demo)" class="bg-transparent text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none w-36 sm:w-44 font-mono">
-                    <span id="mode-badge" class="ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 whitespace-nowrap">
-                        DEMO MOCK
+                    <input type="password" id="api-key-input" placeholder="Dán Gemini API Key..." class="bg-transparent text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none w-36 sm:w-44 font-mono">
+                    <button id="btn-clear-apikey" type="button" class="hidden ml-1 text-slate-400 hover:text-rose-500 transition cursor-pointer" title="Xóa API Key đã lưu">
+                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                    </button>
+                    <span id="mode-badge" class="ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30 whitespace-nowrap">
+                        CHƯA CÓ KEY
                     </span>
                 </div>
 
@@ -220,10 +223,11 @@
                             <span>Chụp vùng màn hình</span>
                         </button>
                         
-                        <button id="btn-sample-cad" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 text-xs font-medium transition active:scale-95" title="Mở bản vẽ AutoCAD mẫu để test cắt vùng">
-                            <i data-lucide="file-image" class="w-3.5 h-3.5 text-amber-500 dark:text-amber-400"></i>
-                            <span class="hidden sm:inline">Bản vẽ mẫu</span>
+                        <button id="btn-upload-image" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 text-xs font-medium transition active:scale-95" title="Tải ảnh bản vẽ từ máy tính">
+                            <i data-lucide="upload" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400"></i>
+                            <span>Tải ảnh lên</span>
                         </button>
+                        <input type="file" id="file-image-input" accept="image/*" class="hidden">
 
                         <button id="btn-paste-trigger" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 text-xs font-medium transition active:scale-95" title="Dán ảnh từ Clipboard (Ctrl+V)">
                             <i data-lucide="clipboard-paste" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400"></i>
@@ -255,8 +259,8 @@
                             <div class="w-12 h-12 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center mx-auto mb-3 group-hover:border-cyan-500/40 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 text-slate-500 dark:text-slate-400 shadow-sm transition">
                                 <i data-lucide="scan-line" class="w-6 h-6"></i>
                             </div>
-                            <p class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Chụp vùng bản vẽ hoặc nhấn <kbd class="px-1.5 py-0.5 text-xs font-mono bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-cyan-700 dark:text-cyan-400">Ctrl + V</kbd></p>
-                            <p class="text-xs text-slate-500">Hỗ trợ chụp cửa sổ phần mềm CAD, PDF thông số kỹ thuật hoặc chọn "Bản vẽ mẫu" để thử nghiệm ngay.</p>
+                            <p class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Chụp vùng màn hình, tải ảnh hoặc nhấn <kbd class="px-1.5 py-0.5 text-xs font-mono bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-cyan-700 dark:text-cyan-400">Ctrl + V</kbd></p>
+                            <p class="text-xs text-slate-500">Hỗ trợ kéo thả file ảnh trực tiếp vào khung này, chụp cửa sổ AutoCAD, bản vẽ PDF hoặc tài liệu kỹ thuật.</p>
                         </div>
 
                         <!-- Active Image Preview -->
@@ -289,9 +293,11 @@
                                 <span>Văn bản / Lệnh / Ghi chú bản vẽ (Tùy chọn bổ sung)</span>
                             </label>
                             <div class="flex items-center gap-2">
-                                <button id="btn-insert-sample-text" class="text-[11px] text-cyan-600 dark:text-cyan-400 hover:text-cyan-500 dark:hover:text-cyan-300 hover:underline font-medium">Điền mẫu câu kỹ thuật</button>
                                 <button id="btn-clear-text" class="text-[11px] text-slate-500 hover:text-slate-800 dark:hover:text-slate-300">Xóa chữ</button>
                             </div>
+                        </div>
+                        <textarea id="source-text" rows="4" class="w-full flex-1 bg-slate-50 dark:bg-slate-950/70 border border-slate-300 dark:border-slate-800 focus:border-cyan-500/60 rounded-xl p-3 text-sm font-mono text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 resize-none leading-relaxed transition-colors" placeholder="Nhập hoặc dán dòng lệnh, ghi chú kỹ thuật cần dịch..."></textarea>
+                    </div>
                         </div>
                         <textarea id="source-text" rows="4" class="w-full flex-1 bg-slate-50 dark:bg-slate-950/70 border border-slate-300 dark:border-slate-800 focus:border-cyan-500/60 rounded-xl p-3 text-sm font-mono text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 resize-none leading-relaxed transition-colors" placeholder="Nhập hoặc dán dòng lệnh, ghi chú trên bản vẽ (VD: CHAMFER DIST 5x45°, FILLET R10, TOLERANCE ±0.05mm, ALL DIMENSIONS IN MM...)"></textarea>
                     </div>
@@ -446,15 +452,15 @@
         // =========================================================================
         const state = {
             theme: localStorage.getItem('techspec_theme') || 'dark',
-            domain: 'autocad',
-            langPair: 'en-vi',
-            apiKey: '',
+            domain: localStorage.getItem('techspec_domain') || 'autocad',
+            langPair: localStorage.getItem('techspec_lang') || 'en-vi',
+            apiKey: localStorage.getItem('techspec_gemini_key') || '',
             currentImageBase64: null,
             fullCaptureCanvas: null, // Stores full image for re-cropping
             isZoomed: false,
-            history: []
+            history: JSON.parse(localStorage.getItem('techspec_history') || '[]')
         };
-// ... existing code ... -->
+
         // =========================================================================
         // 2. DOM ELEMENTS
         // =========================================================================
@@ -466,10 +472,12 @@
             domainSelect: document.getElementById('domain-select'),
             langSelect: document.getElementById('lang-select'),
             apiKeyInput: document.getElementById('api-key-input'),
+            btnClearApiKey: document.getElementById('btn-clear-apikey'),
             modeBadge: document.getElementById('mode-badge'),
             
             btnScreenCapture: document.getElementById('btn-screen-capture'),
-            btnSampleCad: document.getElementById('btn-sample-cad'),
+            btnUploadImage: document.getElementById('btn-upload-image'),
+            fileImageInput: document.getElementById('file-image-input'),
             btnPasteTrigger: document.getElementById('btn-paste-trigger'),
             
             imageDropzone: document.getElementById('image-dropzone'),
@@ -483,7 +491,6 @@
             btnClearImg: document.getElementById('btn-clear-img'),
             
             sourceText: document.getElementById('source-text'),
-            btnInsertSampleText: document.getElementById('btn-insert-sample-text'),
             btnClearText: document.getElementById('btn-clear-text'),
             btnTranslate: document.getElementById('btn-translate'),
             
@@ -509,91 +516,38 @@
             btnConfirmCrop: document.getElementById('btn-confirm-crop'),
             btnCancelCrop: document.getElementById('btn-cancel-crop')
         };
-
+// ... existing code ... -->
         // =========================================================================
-        // 3. UTILITY FUNCTIONS (THEME, TOAST & CLIPBOARD)
+        // 4. HEADER CONTROLS & PERSISTENT SETTINGS
         // =========================================================================
-        function applyTheme(theme) {
-            state.theme = theme;
-            localStorage.setItem('techspec_theme', theme);
-            
-            if (theme === 'dark') {
-                document.documentElement.classList.add('dark');
-                els.themeIconSun.classList.add('hidden');
-                els.themeIconMoon.classList.remove('hidden');
-                els.themeLabel.textContent = 'Tối';
+        function syncApiKeyUI(key) {
+            state.apiKey = key.trim();
+            els.apiKeyInput.value = state.apiKey;
+            if (state.apiKey.length > 10) {
+                localStorage.setItem('techspec_gemini_key', state.apiKey);
+                els.modeBadge.textContent = 'API SẴN SÀNG';
+                els.modeBadge.className = 'ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 whitespace-nowrap';
+                els.btnClearApiKey.classList.remove('hidden');
             } else {
-                document.documentElement.classList.remove('dark');
-                els.themeIconSun.classList.remove('hidden');
-                els.themeIconMoon.classList.add('hidden');
-                els.themeLabel.textContent = 'Sáng';
+                localStorage.removeItem('techspec_gemini_key');
+                els.modeBadge.textContent = 'CHƯA CÓ KEY';
+                els.modeBadge.className = 'ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30 whitespace-nowrap';
+                els.btnClearApiKey.classList.add('hidden');
             }
         }
 
-        // Sync initial theme button UI
-        applyTheme(state.theme);
+        // Restore saved preferences on load
+        els.domainSelect.value = state.domain;
+        els.langSelect.value = state.langPair;
+        const initialDomainName = els.domainSelect.options[els.domainSelect.selectedIndex]?.text || 'AutoCAD / Kỹ thuật vẽ';
+        els.resultDomainTag.textContent = initialDomainName;
+        els.scanningDomainText.textContent = `Ngữ cảnh: ${initialDomainName}`;
+        syncApiKeyUI(state.apiKey);
+        renderHistoryList();
 
-        els.btnThemeToggle.addEventListener('click', () => {
-            const nextTheme = state.theme === 'dark' ? 'light' : 'dark';
-            applyTheme(nextTheme);
-            showToast(`Đã chuyển sang giao diện ${nextTheme === 'dark' ? 'Tối (CAD Dark)' : 'Sáng (Paper Light)'}`, 'info');
-        });
-
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            
-            const colors = {
-                info: 'bg-white dark:bg-slate-900 border-cyan-500/60 dark:border-cyan-500/50 text-cyan-800 dark:text-cyan-200',
-                success: 'bg-white dark:bg-slate-900 border-emerald-500/60 dark:border-emerald-500/50 text-emerald-800 dark:text-emerald-300',
-                warning: 'bg-white dark:bg-slate-900 border-amber-500/60 dark:border-amber-500/50 text-amber-800 dark:text-amber-300',
-                error: 'bg-white dark:bg-slate-900 border-rose-500/60 dark:border-rose-500/50 text-rose-800 dark:text-rose-300'
-            };
-
-            const icons = {
-                info: 'info',
-                success: 'check-circle',
-                warning: 'alert-triangle',
-                error: 'x-circle'
-            };
-
-            toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-xl border shadow-xl backdrop-blur-md text-xs font-medium transition-all duration-300 translate-y-2 opacity-0 ${colors[type] || colors.info}`;
-            toast.innerHTML = `<i data-lucide="${icons[type] || 'info'}" class="w-4 h-4 shrink-0"></i><span>${message}</span>`;
-            
-            container.appendChild(toast);
-            lucide.createIcons({ root: toast });
-
-            requestAnimationFrame(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
-            });
-
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => toast.remove(), 300);
-            }, 3500);
-        }
-
-        function copyTextToClipboard(text) {
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            textarea.style.position = 'fixed';
-            textarea.style.opacity = '0';
-            document.body.appendChild(textarea);
-            textarea.select();
-            try {
-                document.execCommand('copy');
-                showToast('Đã sao chép kết quả dịch vào bộ nhớ tạm!', 'success');
-            } catch (err) {
-                showToast('Không thể sao chép tự động, vui lòng bôi đen và copy thủ công.', 'error');
-            }
-            document.body.removeChild(textarea);
-        }
-
-        // =========================================================================
-        // 4. HEADER CONTROLS & API KEY MODE SWITCHING
-        // =========================================================================
         els.domainSelect.addEventListener('change', (e) => {
             state.domain = e.target.value;
+            localStorage.setItem('techspec_domain', state.domain);
             const domainName = e.target.options[e.target.selectedIndex].text;
             els.resultDomainTag.textContent = domainName;
             els.scanningDomainText.textContent = `Ngữ cảnh: ${domainName}`;
@@ -601,329 +555,35 @@
 
         els.langSelect.addEventListener('change', (e) => {
             state.langPair = e.target.value;
+            localStorage.setItem('techspec_lang', state.langPair);
         });
 
         els.apiKeyInput.addEventListener('input', (e) => {
-            state.apiKey = e.target.value.trim();
-            if (state.apiKey.length > 10) {
-                els.modeBadge.textContent = 'GEMINI LIVE';
-                els.modeBadge.className = 'ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border border-cyan-500/40 whitespace-nowrap';
-            } else {
-                els.modeBadge.textContent = 'DEMO MOCK';
-                els.modeBadge.className = 'ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 whitespace-nowrap';
-            }
+            syncApiKeyUI(e.target.value);
+        });
+
+        els.btnClearApiKey.addEventListener('click', () => {
+            syncApiKeyUI('');
+            showToast('Đã xóa Gemini API Key khỏi trình duyệt.', 'info');
         });
 
         // =========================================================================
-        // 5. MOCK AUTOCAD DRAWING GENERATOR (ADAPTS TO LIGHT / DARK THEME)
-        // =========================================================================
-        function generateMockCADCanvas() {
-            const isDark = state.theme === 'dark';
-            const canvas = document.createElement('canvas');
-            canvas.width = 1100;
-            canvas.height = 680;
-            const ctx = canvas.getContext('2d');
-
-            // AutoCAD Model Space (Dark) vs Paper Space Layout (Light)
-            ctx.fillStyle = isDark ? '#141923' : '#f8fafc';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Subtle Grid
-            ctx.strokeStyle = isDark ? '#1f2937' : '#e2e8f0';
-            ctx.lineWidth = 1;
-            for (let x = 0; x < canvas.width; x += 25) {
-                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-            }
-            for (let y = 0; y < canvas.height; y += 25) {
-                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-            }
-
-            // AutoCAD Top Ribbon Mock Header
-            ctx.fillStyle = isDark ? '#1e293b' : '#e2e8f0';
-            ctx.fillRect(0, 0, canvas.width, 42);
-            ctx.fillStyle = isDark ? '#38bdf8' : '#0284c7';
-            ctx.font = 'bold 14px JetBrains Mono, monospace';
-            ctx.fillText(`AUTOCAD MECHANICAL 2026 - [SHAFT_HOUSING_ASSY.dwg] (${isDark ? 'Model' : 'Layout1'})`, 20, 26);
-
-            // Outer Border Frame
-            ctx.strokeStyle = isDark ? '#e2e8f0' : '#0f172a';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(30, 60, canvas.width - 60, canvas.height - 95);
-
-            // Mechanical Part Drawing (Section View)
-            ctx.save();
-            ctx.translate(120, 140);
-
-            // Centerline (Red Dash-Dot)
-            ctx.strokeStyle = isDark ? '#f43f5e' : '#dc2626';
-            ctx.setLineDash([18, 5, 3, 5]);
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.moveTo(-30, 150);
-            ctx.lineTo(520, 150);
-            ctx.stroke();
-
-            // Main Part Contour (Cyan/Blue Solid Lines)
-            ctx.setLineDash([]);
-            ctx.strokeStyle = isDark ? '#38bdf8' : '#0369a1';
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            ctx.moveTo(20, 70);
-            ctx.lineTo(180, 70);
-            ctx.lineTo(180, 40);
-            ctx.lineTo(360, 40);
-            ctx.lineTo(375, 55); // Chamfer
-            ctx.lineTo(375, 245);
-            ctx.lineTo(360, 260); // Chamfer
-            ctx.lineTo(180, 260);
-            ctx.lineTo(180, 230);
-            ctx.lineTo(20, 230);
-            ctx.closePath();
-            ctx.stroke();
-
-            // Inner Bore (Hidden Lines - Dashed)
-            ctx.strokeStyle = isDark ? '#facc15' : '#b45309';
-            ctx.setLineDash([8, 6]);
-            ctx.lineWidth = 1.8;
-            ctx.strokeRect(20, 110, 355, 80);
-
-            // Dimension Lines & Technical Callouts
-            ctx.setLineDash([]);
-            ctx.strokeStyle = isDark ? '#4ade80' : '#15803d';
-            ctx.fillStyle = isDark ? '#4ade80' : '#15803d';
-            ctx.font = 'bold 13px JetBrains Mono, monospace';
-
-            // Callout 1: Chamfer
-            ctx.beginPath();
-            ctx.moveTo(368, 48);
-            ctx.lineTo(430, 10);
-            ctx.lineTo(610, 10);
-            ctx.stroke();
-            ctx.fillText('CHAMFER 5x45° (ALL EDGES)', 435, 4);
-
-            // Callout 2: Fillet
-            ctx.beginPath();
-            ctx.moveTo(180, 70);
-            ctx.lineTo(120, 15);
-            ctx.lineTo(-10, 15);
-            ctx.stroke();
-            ctx.fillText('FILLET R10', -5, 8);
-
-            // Callout 3: Bore Tolerance
-            ctx.beginPath();
-            ctx.moveTo(260, 110);
-            ctx.lineTo(310, 190);
-            ctx.stroke();
-            ctx.fillText('Ø80 H7 (+0.030 / 0.000)', 200, 285);
-
-            ctx.restore();
-
-            // Engineering Notes Block (Bottom Right)
-            const noteX = 630;
-            const noteY = 390;
-            ctx.strokeStyle = isDark ? '#94a3b8' : '#334155';
-            ctx.lineWidth = 1.5;
-            ctx.strokeRect(noteX, noteY, 410, 215);
-
-            ctx.fillStyle = isDark ? '#38bdf8' : '#0284c7';
-            ctx.font = 'bold 14px JetBrains Mono, monospace';
-            ctx.fillText('GENERAL TECHNICAL NOTES:', noteX + 15, noteY + 28);
-
-            ctx.fillStyle = isDark ? '#f8fafc' : '#0f172a';
-            ctx.font = '13px JetBrains Mono, monospace';
-            const notes = [
-                '1. ALL DIMENSIONS ARE IN MILLIMETERS.',
-                '2. MATERIAL: SUS304 STAINLESS STEEL.',
-                '3. SURFACE ROUGHNESS: Ra 1.6 µm.',
-                '4. GENERAL TOLERANCE: ISO 2768-mK.',
-                '5. REMOVE ALL BURRS & SHARP EDGES.',
-                '6. ORTHO MODE: ON | LAYER: MECHANICAL_01'
-            ];
-            notes.forEach((line, idx) => {
-                ctx.fillText(line, noteX + 15, noteY + 58 + (idx * 24));
-            });
-
-            return canvas;
-        }
-
-        // =========================================================================
-        // 6. SCREEN CAPTURE & INTERACTIVE REGION CROPPER
+        // 5. SCREEN CAPTURE & INTERACTIVE REGION CROPPER
         // =========================================================================
         let cropState = {
             isDrawing: false,
             startX: 0,
             startY: 0,
             endX: 0,
-            endY: 0,
-            scaleX: 1,
-            scaleY: 1
+            endY: 0
         };
-
-        function openCropModal(sourceCanvas) {
-            state.fullCaptureCanvas = sourceCanvas;
-            els.cropModal.classList.remove('hidden');
-            els.cropModal.classList.add('flex');
-            els.btnConfirmCrop.disabled = true;
-            els.cropDimensions.textContent = '0 × 0 px';
-
-            const canvas = els.cropCanvas;
-            canvas.width = sourceCanvas.width;
-            canvas.height = sourceCanvas.height;
-
-            cropState.isDrawing = false;
-            cropState.startX = 0;
-            cropState.startY = 0;
-            cropState.endX = 0;
-            cropState.endY = 0;
-
-            renderCropCanvas();
-        }
-
-        function closeCropModal() {
-            els.cropModal.classList.add('hidden');
-            els.cropModal.classList.remove('flex');
-        }
-
-        function renderCropCanvas() {
-            if (!state.fullCaptureCanvas) return;
-            const canvas = els.cropCanvas;
-            const ctx = canvas.getContext('2d');
-
-            // Draw full source image
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(state.fullCaptureCanvas, 0, 0);
-
-            const x = Math.min(cropState.startX, cropState.endX);
-            const y = Math.min(cropState.startY, cropState.endY);
-            const w = Math.abs(cropState.endX - cropState.startX);
-            const h = Math.abs(cropState.endY - cropState.startY);
-
-            if (w > 5 && h > 5) {
-                // Dim outside area
-                ctx.fillStyle = 'rgba(2, 6, 23, 0.65)';
-                ctx.fillRect(0, 0, canvas.width, y);
-                ctx.fillRect(0, y + h, canvas.width, canvas.height - (y + h));
-                ctx.fillRect(0, y, x, h);
-                ctx.fillRect(x + w, y, canvas.width - (x + w), h);
-
-                // Selection Border (CAD Cyan)
-                ctx.strokeStyle = '#06b6d4';
-                ctx.lineWidth = 2.5;
-                ctx.setLineDash([6, 4]);
-                ctx.strokeRect(x, y, w, h);
-                ctx.setLineDash([]);
-
-                // Corner Handles
-                ctx.fillStyle = '#38bdf8';
-                const hs = 8;
-                ctx.fillRect(x - hs/2, y - hs/2, hs, hs);
-                ctx.fillRect(x + w - hs/2, y - hs/2, hs, hs);
-                ctx.fillRect(x - hs/2, y + h - hs/2, hs, hs);
-                ctx.fillRect(x + w - hs/2, y + h - hs/2, hs, hs);
-
-                els.cropDimensions.textContent = `${Math.round(w)} × ${Math.round(h)} px`;
-                els.btnConfirmCrop.disabled = false;
-            }
-        }
-
-        function getCanvasCoordinates(e) {
-            const rect = els.cropCanvas.getBoundingClientRect();
-            const scaleX = els.cropCanvas.width / rect.width;
-            const scaleY = els.cropCanvas.height / rect.height;
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            return {
-                x: Math.max(0, Math.min(els.cropCanvas.width, (clientX - rect.left) * scaleX)),
-                y: Math.max(0, Math.min(els.cropCanvas.height, (clientY - rect.top) * scaleY))
-            };
-        }
-
-        els.cropCanvas.addEventListener('mousedown', (e) => {
-            const pos = getCanvasCoordinates(e);
-            cropState.isDrawing = true;
-            cropState.startX = pos.x;
-            cropState.startY = pos.y;
-            cropState.endX = pos.x;
-            cropState.endY = pos.y;
-            renderCropCanvas();
-        });
-
-        els.cropCanvas.addEventListener('mousemove', (e) => {
-            if (!cropState.isDrawing) return;
-            const pos = getCanvasCoordinates(e);
-            cropState.endX = pos.x;
-            cropState.endY = pos.y;
-            renderCropCanvas();
-        });
-
-        window.addEventListener('mouseup', () => {
-            if (cropState.isDrawing) {
-                cropState.isDrawing = false;
-                renderCropCanvas();
-            }
-        });
-
-        // Touch support for mobile/tablet cropping
-        els.cropCanvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            const pos = getCanvasCoordinates(e);
-            cropState.isDrawing = true;
-            cropState.startX = pos.x;
-            cropState.startY = pos.y;
-            cropState.endX = pos.x;
-            cropState.endY = pos.y;
-        }, { passive: false });
-
-        els.cropCanvas.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            if (!cropState.isDrawing) return;
-            const pos = getCanvasCoordinates(e);
-            cropState.endX = pos.x;
-            cropState.endY = pos.y;
-            renderCropCanvas();
-        }, { passive: false });
-
-        els.cropCanvas.addEventListener('touchend', () => {
-            cropState.isDrawing = false;
-            renderCropCanvas();
-        });
-
-        // Confirm Crop & Extract Region Base64
-        els.btnConfirmCrop.addEventListener('click', () => {
-            const x = Math.min(cropState.startX, cropState.endX);
-            const y = Math.min(cropState.startY, cropState.endY);
-            const w = Math.abs(cropState.endX - cropState.startX);
-            const h = Math.abs(cropState.endY - cropState.startY);
-
-            if (w < 10 || h < 10) {
-                showToast('Vùng chọn quá nhỏ, vui lòng kéo vùng rộng hơn.', 'warning');
-                return;
-            }
-
-            const croppedCanvas = document.createElement('canvas');
-            croppedCanvas.width = w;
-            croppedCanvas.height = h;
-            const ctx = croppedCanvas.getContext('2d');
-            ctx.drawImage(state.fullCaptureCanvas, x, y, w, h, 0, 0, w, h);
-
-            const dataUrl = croppedCanvas.toDataURL('image/png');
-            setPreviewImage(dataUrl, `Vùng cắt: ${Math.round(w)}×${Math.round(h)}px`);
-            closeCropModal();
-            showToast('Đã trích xuất vùng bản vẽ! Nhấn "Dịch chuyên ngành" để phân tích.', 'success');
-        });
-
-        els.btnCancelCrop.addEventListener('click', closeCropModal);
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !els.cropModal.classList.contains('hidden')) {
-                closeCropModal();
-            }
-        });
-
-        // Screen Capture Button (getDisplayMedia with graceful fallback)
+// ... existing code ... -->
+        // Screen Capture Button (Real getDisplayMedia)
         els.btnScreenCapture.addEventListener('click', async () => {
             try {
                 if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
-                    throw new Error('Trình duyệt không hỗ trợ getDisplayMedia');
+                    showToast('Trình duyệt của bạn không hỗ trợ chụp màn hình trực tiếp. Hãy dùng nút Tải ảnh lên hoặc Ctrl + V.', 'error');
+                    return;
                 }
                 const stream = await navigator.mediaDevices.getDisplayMedia({
                     video: { cursor: 'always' },
@@ -947,22 +607,66 @@
 
                 openCropModal(captureCanvas);
             } catch (err) {
-                console.warn('Screen capture fallback triggered:', err);
-                showToast('Trình duyệt chặn chia sẻ màn hình hoặc bạn đã hủy — Đang mở Bản vẽ CAD mẫu để bạn thử tính năng cắt vùng!', 'warning');
-                const mockCanvas = generateMockCADCanvas();
-                openCropModal(mockCanvas);
+                if (err.name !== 'NotAllowedError') {
+                    showToast('Không thể chụp màn hình. Bạn có thể dùng công cụ chụp của máy (Win+Shift+S) rồi nhấn Ctrl+V.', 'warning');
+                }
             }
         });
 
-        // Sample CAD Drawing Button
-        els.btnSampleCad.addEventListener('click', () => {
-            const mockCanvas = generateMockCADCanvas();
-            openCropModal(mockCanvas);
+        // =========================================================================
+        // 6. IMAGE UPLOAD, DRAG & DROP, CLIPBOARD PASTE (CTRL+V) & ZOOM CONTROLS
+        // =========================================================================
+        function loadImageFile(file, sourceLabel = 'Ảnh tải lên') {
+            if (!file || !file.type.startsWith('image/')) {
+                showToast('Vui lòng chọn tệp hình ảnh hợp lệ (PNG, JPG, WEBP...).', 'warning');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    canvas.getContext('2d').drawImage(img, 0, 0);
+                    state.fullCaptureCanvas = canvas;
+                    setPreviewImage(event.target.result, `${sourceLabel} (${img.width}×${img.height}px)`);
+                    showToast('Đã tải ảnh! Bấm nút Cắt (Crop) trên góc ảnh nếu muốn khoanh vùng chi tiết.', 'success');
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        els.btnUploadImage.addEventListener('click', () => {
+            els.fileImageInput.click();
         });
 
-        // =========================================================================
-        // 7. IMAGE PREVIEW, CLIPBOARD PASTE (CTRL+V) & ZOOM CONTROLS
-        // =========================================================================
+        els.fileImageInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                loadImageFile(e.target.files[0], e.target.files[0].name);
+                e.target.value = '';
+            }
+        });
+
+        // Drag and Drop support on dropzone
+        els.imageDropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            els.imageDropzone.classList.add('border-cyan-500', 'bg-cyan-500/5');
+        });
+
+        els.imageDropzone.addEventListener('dragleave', () => {
+            els.imageDropzone.classList.remove('border-cyan-500', 'bg-cyan-500/5');
+        });
+
+        els.imageDropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            els.imageDropzone.classList.remove('border-cyan-500', 'bg-cyan-500/5');
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                loadImageFile(e.dataTransfer.files[0], e.dataTransfer.files[0].name);
+            }
+        });
+
         function setPreviewImage(dataUrl, metaText = 'Ảnh từ Clipboard') {
             state.currentImageBase64 = dataUrl;
             els.previewImg.src = dataUrl;
@@ -975,6 +679,7 @@
 
         function clearPreviewImage() {
             state.currentImageBase64 = null;
+            state.fullCaptureCanvas = null;
             els.previewImg.src = '';
             els.imagePreviewWrapper.classList.add('hidden');
             els.imageEmptyState.classList.remove('hidden');
@@ -988,22 +693,7 @@
             for (const item of items) {
                 if (item.type.indexOf('image') !== -1) {
                     e.preventDefault();
-                    const blob = item.getAsFile();
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        const img = new Image();
-                        img.onload = () => {
-                            const canvas = document.createElement('canvas');
-                            canvas.width = img.width;
-                            canvas.height = img.height;
-                            canvas.getContext('2d').drawImage(img, 0, 0);
-                            state.fullCaptureCanvas = canvas;
-                            setPreviewImage(event.target.result, `Ảnh dán Clipboard (${img.width}×${img.height}px)`);
-                            showToast('Đã dán ảnh từ Clipboard! Bạn có thể bấm nút Cắt (Crop) trên ảnh nếu muốn chọn vùng nhỏ hơn.', 'success');
-                        };
-                        img.src = event.target.result;
-                    };
-                    reader.readAsDataURL(blob);
+                    loadImageFile(item.getAsFile(), 'Ảnh dán Clipboard');
                     return;
                 }
             }
@@ -1016,12 +706,7 @@
                     const imageType = item.types.find(t => t.startsWith('image/'));
                     if (imageType) {
                         const blob = await item.getType(imageType);
-                        const reader = new FileReader();
-                        reader.onload = (ev) => {
-                            setPreviewImage(ev.target.result, 'Ảnh dán từ Clipboard');
-                            showToast('Đã tải ảnh từ bộ nhớ tạm!', 'success');
-                        };
-                        reader.readAsDataURL(blob);
+                        loadImageFile(blob, 'Ảnh dán Clipboard');
                         return;
                     }
                 }
@@ -1030,46 +715,10 @@
                 showToast('Vui lòng nhấn tổ hợp phím Ctrl + V trực tiếp trên trang để dán ảnh.', 'info');
             }
         });
-
-        els.btnRecrop.addEventListener('click', () => {
-            if (state.fullCaptureCanvas) {
-                openCropModal(state.fullCaptureCanvas);
-            } else if (state.currentImageBase64) {
-                const img = new Image();
-                img.onload = () => {
-                    const c = document.createElement('canvas');
-                    c.width = img.width;
-                    c.height = img.height;
-                    c.getContext('2d').drawImage(img, 0, 0);
-                    openCropModal(c);
-                };
-                img.src = state.currentImageBase64;
-            }
-        });
-
-        els.btnZoomImg.addEventListener('click', () => {
-            state.isZoomed = !state.isZoomed;
-            els.previewImg.style.transform = state.isZoomed ? 'scale(1.5)' : 'scale(1)';
-            els.previewImg.style.transformOrigin = 'center center';
-        });
-
+// ... existing code ... -->
         els.btnClearImg.addEventListener('click', () => {
             clearPreviewImage();
             showToast('Đã xóa ảnh vùng chọn.', 'info');
-        });
-
-        // Sample Text Helpers
-        const sampleTextsByDomain = {
-            autocad: 'CHAMFER DIST 5x45° (ALL EDGES), FILLET R10, ORTHO MODE: ON, HATCH PATTERN: ANSI31, ALL DIMENSIONS IN MILLIMETERS.',
-            mechanical: 'MATERIAL: SUS304 STAINLESS STEEL. SURFACE ROUGHNESS: Ra 1.6 µm. BORE TOLERANCE: Ø80 H7 (+0.030/0.000). REMOVE ALL BURRS.',
-            electrical: '3-PHASE INDUCTION MOTOR 380VAC 50Hz, MCCB 100A 3P, EMERGENCY STOP PUSHBUTTON (NC), PLC DIGITAL INPUT MODULE 24VDC.',
-            construction: 'REINFORCED CONCRETE SLAB THK 200mm, GRADE C30/37, REBAR Ø16 @150mm C/C BOTH WAYS, FINISH FLOOR LEVEL (FFL) +3.600m.',
-            it: 'ASYNCHRONOUS WEBHOOK PAYLOAD OVER TLS 1.3, IDEMPOTENCY KEY REQUIRED IN HEADER, EXPONENTIAL BACKOFF RETRY POLICY.'
-        };
-
-        els.btnInsertSampleText.addEventListener('click', () => {
-            els.sourceText.value = sampleTextsByDomain[state.domain] || sampleTextsByDomain.autocad;
-            showToast('Đã điền mẫu ghi chú kỹ thuật theo chuyên ngành.', 'info');
         });
 
         els.btnClearText.addEventListener('click', () => {
@@ -1077,7 +726,7 @@
         });
 
         // =========================================================================
-        // 8. GEMINI API INTEGRATION & DOMAIN-AWARE MOCK AI ENGINE
+        // 7. GEMINI LIVE API ENGINE
         // =========================================================================
         async function callGeminiAPI(apiKey, domainLabel, langLabel, textInput, imageBase64) {
             const modelsToTry = ['gemini-3-flash-preview', 'gemini-3.8-flash', 'gemini-2.5-flash-lite'];
@@ -1094,52 +743,7 @@ Quy tắc bắt buộc:
   ],
   "engineeringNote": "Một lưu ý quan trọng về tiêu chuẩn kỹ thuật, gia công hoặc thi công liên quan đến đoạn nội dung này."
 }`;
-
-            const parts = [{ text: systemPrompt }];
-            if (textInput) {
-                parts.push({ text: `Văn bản cần dịch:\n${textInput}` });
-            } else {
-                parts.push({ text: `Hãy trích xuất toàn bộ chữ và ký hiệu kỹ thuật trong vùng ảnh này và dịch sang tiếng Việt chuyên ngành.` });
-            }
-
-            if (imageBase64) {
-                const base64Data = imageBase64.split(',')[1];
-                const mimeType = imageBase64.substring(imageBase64.indexOf(':') + 1, imageBase64.indexOf(';'));
-                parts.push({
-                    inlineData: {
-                        mimeType: mimeType,
-                        data: base64Data
-                    }
-                });
-            }
-
-            let lastError = null;
-            for (const modelName of modelsToTry) {
-                const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(apiKey)}`;
-                try {
-                    const response = await fetch(endpoint, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ parts }],
-                            generationConfig: {
-                                temperature: 0.2,
-                                responseMimeType: "application/json"
-                            }
-                        })
-                    });
-
-                    if (!response.ok) {
-                        const errData = await response.json().catch(() => ({}));
-                        const errMsg = errData.error?.message || `Lỗi HTTP ${response.status}`;
-                        // Nếu lỗi liên quan đến tên model không khả dụng hoặc không tìm thấy, thử model kế tiếp
-                        if (errMsg.toLowerCase().includes('no longer available') || errMsg.toLowerCase().includes('not found') || response.status === 404) {
-                            lastError = new Error(errMsg);
-                            continue;
-                        }
-                        throw new Error(errMsg);
-                    }
-
+// ... existing code ... -->
                     const data = await response.json();
                     const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
                     const cleanedJson = rawText.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim();
@@ -1157,64 +761,8 @@ Quy tắc bắt buộc:
             throw lastError || new Error('Không thể kết nối tới các phiên bản model Gemini.');
         }
 
-        function generateMockTranslation(domain, textInput, hasImage) {
-            const lowerText = (textInput || '').toLowerCase();
-
-            // Smart keyword matching for realistic demo experience
-            if (domain === 'autocad' || lowerText.includes('chamfer') || lowerText.includes('fillet') || hasImage) {
-                return {
-                    translation: `• Vát mép (CHAMFER) kích thước 5×45° cho tất cả các cạnh.\n• Bo tròn góc (FILLET) bán kính R10.\n• Kích thước lỗ lắp ghép: Ø80 H7 (+0.030 / 0.000) — Lắp lỏng hệ lỗ cơ bản.\n• Chế độ vẽ thẳng góc (ORTHO MODE): BẬT | Lớp bản vẽ (LAYER): MECHANICAL_01.\n• Ghi chú chung: Tất cả kích thước tính bằng milimét (mm). Vật liệu thép không gỉ SUS304. Độ nhám bề mặt Ra 1.6 µm. Dung sai chung theo tiêu chuẩn ISO 2768-mK. Làm sạch ba via và cạnh sắc.`,
-                    terms: [
-                        { term: 'CHAMFER (CHA)', meaning: 'Vát mép cạnh sắc', note: 'Lệnh tắt: CHA | Thường dùng góc 45° để dễ lắp ghép trục/lỗ' },
-                        { term: 'FILLET (F)', meaning: 'Bo tròn góc lượn', note: 'Lệnh tắt: F | Giảm tập trung ứng suất tại góc vuông' },
-                        { term: 'Ø80 H7', meaning: 'Đường kính danh nghĩa 80mm, cấp chính xác lỗ H7', note: 'Dung sai cho phép từ +0.000 đến +0.030 mm' },
-                        { term: 'Ra 1.6 µm', meaning: 'Độ nhám bề mặt trung bình số học 1.6 micromet', note: 'Tương đương gia công tiện tinh hoặc mài thô' },
-                        { term: 'Remove all burrs', meaning: 'Tẩy sạch ba via / bavia gia công', note: 'Bắt buộc sau phay/tiện để tránh đứt tay và kẹt chi tiết' },
-                        { term: 'ORTHO MODE (F8)', meaning: 'Chế độ khóa con trỏ theo phương vuông góc X/Y', note: 'Phím tắt: F8 trong AutoCAD' }
-                    ],
-                    engineeringNote: 'Theo tiêu chuẩn ISO 2768-mK, các kích thước dài không ghi dung sai riêng sẽ áp dụng cấp chính xác trung bình (m), và các thông số hình học (độ thẳng, độ phẳng, độ vuông góc) áp dụng cấp K.'
-                };
-            }
-
-            if (domain === 'electrical') {
-                return {
-                    translation: `Động cơ không đồng bộ 3 pha 380VAC 50Hz, bảo vệ bằng Aptomat khối (MCCB) 100A 3 cực. Nút nhấn dừng khẩn cấp (Emergency Stop) sử dụng tiếp điểm thường đóng (NC). Mô-đun ngõ vào số PLC (Digital Input) điện áp 24VDC.`,
-                    terms: [
-                        { term: '3-Phase Induction Motor', meaning: 'Động cơ cảm ứng (không đồng bộ) 3 pha', note: 'Đấu sao (Y) hoặc tam giác (Δ) tùy điện áp lưới' },
-                        { term: 'MCCB 100A 3P', meaning: 'Aptomat dạng khối 3 cực, dòng định mức 100A', note: 'Molded Case Circuit Breaker - Bảo vệ quá tải & ngắn mạch' },
-                        { term: 'NC (Normally Closed)', meaning: 'Tiếp điểm thường đóng', note: 'Tiêu chuẩn an toàn bắt buộc cho nút E-Stop (đứt dây sẽ ngắt mạch)' },
-                        { term: 'PLC DI 24VDC', meaning: 'Ngõ vào số bộ điều khiển lập trình 24V một chiều', note: 'Kiểm tra đấu nối kiểu Sink (NPN) hoặc Source (PNP)' }
-                    ],
-                    engineeringNote: 'Với nút nhấn dừng khẩn cấp (E-Stop), tiêu chuẩn IEC 60204-1 yêu cầu sử dụng tiếp điểm thường đóng (NC) tác động mở cưỡng bức để đảm bảo an toàn khi xảy ra sự cố đứt cáp tín hiệu.'
-                };
-            }
-
-            if (domain === 'construction') {
-                return {
-                    translation: `Sàn bê tông cốt thép (BTCT) dày 200mm, mác bê tông cấp độ bền C30/37. Bố trí cốt thép đường kính Ø16 khoảng cách a150mm theo cả hai phương. Cao độ hoàn thiện sàn (FFL): +3.600m.`,
-                    terms: [
-                        { term: 'THK 200mm', meaning: 'Chiều dày kết cấu 200 milimét', note: 'Viết tắt của Thickness' },
-                        { term: 'Grade C30/37', meaning: 'Cấp độ bền chịu nén bê tông (tiêu chuẩn Eurocode)', note: 'Tương đương khoảng Mác M400 theo TCVN cũ' },
-                        { term: '@150mm C/C', meaning: 'Khoảng cách tim-đến-tim các thanh thép là 150mm', note: 'Center-to-Center (a150)' },
-                        { term: 'FFL +3.600m', meaning: 'Cao độ mặt sàn hoàn thiện +3.600 mét', note: 'Finished Floor Level (đã bao gồm lớp vữa lót & gạch lát)' }
-                    ],
-                    engineeringNote: 'Cần phân biệt rõ FFL (Finished Floor Level - cao độ hoàn thiện) và SSL (Structural Slab Level - cao độ mặt bê tông kết cấu thô) trước khi đổ bê tông sàn.'
-                };
-            }
-
-            return {
-                translation: `Bản dịch chuẩn hóa cho đoạn tài liệu kỹ thuật: "${textInput || 'Dữ liệu trích xuất từ vùng ảnh chụp'}" trong lĩnh vực ${els.domainSelect.options[els.domainSelect.selectedIndex].text}. Các thông số kỹ thuật, đơn vị đo lường và ký hiệu tiêu chuẩn đã được giữ nguyên để đảm bảo tính chính xác khi triển khai.`,
-                terms: [
-                    { term: 'SPECIFICATION', meaning: 'Thông số kỹ thuật / Quy cách', note: 'Tài liệu quy định tiêu chuẩn nghiệm thu' },
-                    { term: 'TOLERANCE', meaning: 'Dung sai cho phép', note: 'Giới hạn sai lệch kích thước/thông số' },
-                    { term: 'REFERENCE (REF)', meaning: 'Kích thước / Thông số tham chiếu', note: 'Không dùng để kiểm tra nghiệm thu trực tiếp' }
-                ],
-                engineeringNote: 'Nhập Gemini API Key ở thanh công cụ phía trên để kích hoạt mô hình Gemini 2.5 Flash dịch trực tiếp mọi ảnh chụp màn hình và tài liệu thực tế của bạn.'
-            };
-        }
-
         // =========================================================================
-        // 9. RENDER RESULTS & TRANSLATION ORCHESTRATION
+        // 8. RENDER RESULTS & TRANSLATION ORCHESTRATION
         // =========================================================================
         function renderTranslationResult(resultObj, sourceSnippet) {
             els.outputPlaceholder.classList.add('hidden');
@@ -1223,109 +771,39 @@ Quy tắc bắt buộc:
             els.btnCopyResult.disabled = false;
 
             els.translatedTextBox.textContent = resultObj.translation || '';
-            els.translationConfidence.textContent = state.apiKey.length > 10 ? `Nguồn: ${resultObj._usedModel || 'Gemini Live'}` : 'Chế độ: Demo Mock AI';
+            els.translationConfidence.textContent = `Model: ${resultObj._usedModel || 'Gemini Vision'}`;
             
             const terms = Array.isArray(resultObj.terms) ? resultObj.terms : [];
             els.termCountBadge.textContent = `${terms.length} thuật ngữ`;
             els.terminologyTbody.innerHTML = '';
-
-            terms.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-100/70 dark:hover:bg-slate-900/60 transition';
-                tr.innerHTML = `
-                    <td class="py-2.5 px-3.5 font-mono font-semibold text-cyan-700 dark:text-cyan-400 align-top">${escapeHtml(item.term)}</td>
-                    <td class="py-2.5 px-3.5 text-slate-800 dark:text-slate-200 font-medium align-top">${escapeHtml(item.meaning)}</td>
-                    <td class="py-2.5 px-3.5 text-slate-500 dark:text-slate-400 text-xs align-top">${escapeHtml(item.note)}</td>
-                `;
-                els.terminologyTbody.appendChild(tr);
-            });
-
-            els.engineeringNoteText.textContent = resultObj.engineeringNote || 'Luôn đối chiếu đơn vị đo lường (mm/inch) trên khung tên bản vẽ trước khi gia công.';
-
-            // Save to session history
-            addToHistory({
-                domain: els.domainSelect.options[els.domainSelect.selectedIndex].text,
-                snippet: sourceSnippet,
-                result: resultObj,
-                time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
-            });
-        }
-
-        function escapeHtml(str) {
-            if (!str) return '';
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;');
-        }
-
+// ... existing code ... -->
         function addToHistory(entry) {
             state.history.unshift(entry);
-            if (state.history.length > 6) state.history.pop();
+            if (state.history.length > 10) state.history.pop();
+            localStorage.setItem('techspec_history', JSON.stringify(state.history));
             renderHistoryList();
         }
-
-        function renderHistoryList() {
-            if (state.history.length === 0) {
-                els.historyList.innerHTML = `<div class="text-xs text-slate-500 dark:text-slate-600 italic col-span-full py-2">Chưa có lịch sử dịch nào trong phiên làm việc.</div>`;
-                return;
-            }
-
-            els.historyList.innerHTML = '';
-            state.history.forEach((item) => {
-                const card = document.createElement('button');
-                card.className = 'text-left p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-slate-950/70 dark:hover:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-cyan-500/50 transition flex flex-col gap-1 group';
-                card.innerHTML = `
-                    <div class="flex items-center justify-between w-full">
-                        <span class="text-[10px] font-mono text-cyan-700 dark:text-cyan-400 truncate max-w-[70%]">${escapeHtml(item.domain)}</span>
-                        <span class="text-[10px] font-mono text-slate-400 dark:text-slate-500">${item.time}</span>
-                    </div>
-                    <p class="text-xs text-slate-700 dark:text-slate-300 truncate w-full font-mono group-hover:text-slate-900 dark:group-hover:text-white">${escapeHtml(item.snippet)}</p>
-                `;
-                card.addEventListener('click', () => {
-                    renderTranslationResultWithoutSaving(item.result);
-                    showToast('Đã khôi phục kết quả từ lịch sử.', 'info');
-                });
-                els.historyList.appendChild(card);
-            });
-        }
-
-        function renderTranslationResultWithoutSaving(resultObj) {
-            els.outputPlaceholder.classList.add('hidden');
-            els.outputContent.classList.remove('hidden');
-            els.outputContent.classList.add('flex');
-            els.btnCopyResult.disabled = false;
-            els.translatedTextBox.textContent = resultObj.translation || '';
-            const terms = Array.isArray(resultObj.terms) ? resultObj.terms : [];
-            els.termCountBadge.textContent = `${terms.length} thuật ngữ`;
-            els.terminologyTbody.innerHTML = '';
-            terms.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-100/70 dark:hover:bg-slate-900/60 transition';
-                tr.innerHTML = `
-                    <td class="py-2.5 px-3.5 font-mono font-semibold text-cyan-700 dark:text-cyan-400 align-top">${escapeHtml(item.term)}</td>
-                    <td class="py-2.5 px-3.5 text-slate-800 dark:text-slate-200 font-medium align-top">${escapeHtml(item.meaning)}</td>
-                    <td class="py-2.5 px-3.5 text-slate-500 dark:text-slate-400 text-xs align-top">${escapeHtml(item.note)}</td>
-                `;
-                els.terminologyTbody.appendChild(tr);
-            });
-            els.engineeringNoteText.textContent = resultObj.engineeringNote || '';
-        }
-
+// ... existing code ... -->
         els.btnClearHistory.addEventListener('click', () => {
             state.history = [];
+            localStorage.removeItem('techspec_history');
             renderHistoryList();
             showToast('Đã xóa lịch sử dịch.', 'info');
         });
 
         // Main Translate Button Handler
         els.btnTranslate.addEventListener('click', async () => {
+            if (state.apiKey.length <= 10) {
+                showToast('Vui lòng nhập Gemini API Key ở góc trên bên phải để bắt đầu dịch!', 'warning');
+                els.apiKeyInput.focus();
+                return;
+            }
+
             const textVal = els.sourceText.value.trim();
             const hasImg = Boolean(state.currentImageBase64);
 
             if (!textVal && !hasImg) {
-                showToast('Vui lòng chụp vùng bản vẽ, dán ảnh hoặc nhập văn bản cần dịch!', 'warning');
+                showToast('Vui lòng chụp vùng bản vẽ, tải ảnh lên hoặc nhập văn bản cần dịch!', 'warning');
                 return;
             }
 
@@ -1339,16 +817,7 @@ Quy tắc bắt buộc:
             const snippet = textVal ? textVal.slice(0, 45) : '[Vùng ảnh bản vẽ kỹ thuật]';
 
             try {
-                let result;
-                if (state.apiKey.length > 10) {
-                    // Live Gemini API Call
-                    result = await callGeminiAPI(state.apiKey, domainLabel, langLabel, textVal, state.currentImageBase64);
-                } else {
-                    // Simulated network delay for realistic AI scan feel
-                    await new Promise(r => setTimeout(r, 1100));
-                    result = generateMockTranslation(state.domain, textVal, hasImg);
-                }
-
+                const result = await callGeminiAPI(state.apiKey, domainLabel, langLabel, textVal, state.currentImageBase64);
                 renderTranslationResult(result, snippet);
                 showToast('Phân tích & dịch thuật ngữ hoàn tất!', 'success');
             } catch (err) {
@@ -1362,16 +831,4 @@ Quy tắc bắt buộc:
         });
 
         // Copy Result Button
-        els.btnCopyResult.addEventListener('click', () => {
-            const mainText = els.translatedTextBox.textContent;
-            const rows = Array.from(els.terminologyTbody.querySelectorAll('tr')).map(tr => {
-                const cells = tr.querySelectorAll('td');
-                return `- ${cells[0]?.textContent}: ${cells[1]?.textContent} (${cells[2]?.textContent})`;
-            }).join('\n');
-
-            const fullCopy = `=== BẢN DỊCH CHUYÊN NGÀNH (${els.resultDomainTag.textContent}) ===\n${mainText}\n\n=== THUẬT NGỮ CHI TIẾT ===\n${rows}`;
-            copyTextToClipboard(fullCopy);
-        });
-    </script>
-</body>
-</html>
+// ... existing code ... -->
