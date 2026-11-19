@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" class="dark">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +14,6 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
@@ -38,7 +37,7 @@
         }
     </script>
     <style>
-        /* Theme CSS Custom Properties (Variables) */
+        /* Light Theme CSS Custom Properties (Variables) */
         :root {
             --cad-bg: #f1f5f9;
             --cad-panel: #ffffff;
@@ -53,20 +52,6 @@
             --scroll-thumb: #cbd5e1;
         }
 
-        html.dark {
-            --cad-bg: #0b0f19;
-            --cad-panel: #111827;
-            --cad-surface: #1e293b;
-            --cad-border: #2d3748;
-            --cad-accent: #06b6d4;
-            --cad-accent-hover: #0891b2;
-            --cad-blue: #3b82f6;
-            --cad-grid: #1e293b;
-            --grid-line: rgba(6, 182, 212, 0.05);
-            --scroll-track: #0b0f19;
-            --scroll-thumb: #334155;
-        }
-
         /* Custom CAD Grid Background */
         .cad-grid-bg {
             background-color: var(--cad-bg);
@@ -74,7 +59,6 @@
                 linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
                 linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
             background-size: 24px 24px;
-            transition: background-color 0.2s ease;
         }
 
         /* Custom Scrollbar */
@@ -106,7 +90,7 @@
             right: 0;
             height: 3px;
             background: linear-gradient(90deg, transparent, var(--cad-accent), #38bdf8, var(--cad-accent), transparent);
-            box-shadow: 0 0 15px 2px rgba(6, 182, 212, 0.8);
+            box-shadow: 0 0 15px 2px rgba(2, 132, 199, 0.7);
             animation: scanline 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
             z-index: 20;
         }
@@ -116,25 +100,14 @@
             cursor: crosshair;
         }
     </style>
-    <script>
-        // Zero-flicker Theme Initialization before first paint
-        (function() {
-            const savedTheme = localStorage.getItem('techspec_theme') || 'dark';
-            if (savedTheme === 'dark') {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-        })();
-    </script>
 </head>
-<body class="bg-cad-bg text-slate-800 dark:text-slate-200 font-sans min-h-screen flex flex-col selection:bg-cyan-500/30 selection:text-cyan-900 dark:selection:text-cyan-200 transition-colors duration-200">
+<body class="bg-cad-bg text-slate-800 font-sans min-h-screen flex flex-col selection:bg-cyan-500/30 selection:text-cyan-900">
 
     <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
     <!-- HEADER -->
-    <header class="bg-white/95 dark:bg-cad-panel/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 px-4 py-3 shadow-sm dark:shadow-lg transition-colors duration-200">
+    <header class="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 px-4 py-3 shadow-sm">
         <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-4">
             
             <!-- Brand Logo -->
@@ -144,20 +117,20 @@
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
-                        <h1 class="font-bold text-lg tracking-tight text-slate-900 dark:text-white">TechSpec <span class="text-cyan-600 dark:text-cyan-400">AI</span></h1>
-                        <span class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border border-cyan-500/30">CAD & Engineering</span>
+                        <h1 class="font-bold text-lg tracking-tight text-slate-900">TechSpec <span class="text-cyan-600">AI</span></h1>
+                        <span class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-700 border border-cyan-500/30">CAD & Engineering</span>
                     </div>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">Dịch thuật ngữ & bản vẽ kỹ thuật thông minh với Gemini</p>
+                    <p class="text-xs text-slate-500 hidden sm:block">Dịch thuật ngữ & bản vẽ kỹ thuật thông minh với Gemini</p>
                 </div>
             </div>
 
-            <!-- Controls: Domain, Language Pair, Theme Switcher, API Key -->
+            <!-- Controls: Domain, Language Pair, API Key -->
             <div class="flex flex-wrap items-center gap-2.5 sm:gap-3 flex-1 justify-end">
                 
                 <!-- Domain Selector -->
                 <div class="relative flex items-center">
-                    <i data-lucide="layers" class="w-4 h-4 text-cyan-600 dark:text-cyan-400 absolute left-3 pointer-events-none"></i>
-                    <select id="domain-select" class="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:border-cyan-500/60 text-slate-800 dark:text-slate-200 text-xs sm:text-sm rounded-lg pl-9 pr-8 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition appearance-none cursor-pointer font-medium">
+                    <i data-lucide="layers" class="w-4 h-4 text-cyan-600 absolute left-3 pointer-events-none"></i>
+                    <select id="domain-select" class="bg-slate-50 border border-slate-300 hover:border-cyan-500/60 text-slate-800 text-xs sm:text-sm rounded-lg pl-9 pr-8 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition appearance-none cursor-pointer font-medium">
                         <option value="autocad">AutoCAD / Kỹ thuật vẽ</option>
                         <option value="mechanical">Cơ khí chế tạo (Mechanical)</option>
                         <option value="electrical">Điện - Tự động hóa (PLC/MEP)</option>
@@ -169,8 +142,8 @@
 
                 <!-- Language Pair Selector -->
                 <div class="relative flex items-center">
-                    <i data-lucide="languages" class="w-4 h-4 text-blue-600 dark:text-blue-400 absolute left-3 pointer-events-none"></i>
-                    <select id="lang-select" class="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:border-cyan-500/60 text-slate-800 dark:text-slate-200 text-xs sm:text-sm rounded-lg pl-9 pr-8 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition appearance-none cursor-pointer">
+                    <i data-lucide="languages" class="w-4 h-4 text-blue-600 absolute left-3 pointer-events-none"></i>
+                    <select id="lang-select" class="bg-slate-50 border border-slate-300 hover:border-cyan-500/60 text-slate-800 text-xs sm:text-sm rounded-lg pl-9 pr-8 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition appearance-none cursor-pointer">
                         <option value="en-vi">Anh (EN) → Việt (VI)</option>
                         <option value="zh-vi">Trung (ZH) → Việt (VI)</option>
                         <option value="ja-vi">Nhật (JA) → Việt (VI)</option>
@@ -179,21 +152,14 @@
                     <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-2.5 pointer-events-none"></i>
                 </div>
 
-                <!-- Theme Switcher Button -->
-                <button id="btn-theme-toggle" type="button" class="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 text-xs font-medium transition active:scale-95 cursor-pointer" title="Chuyển đổi giao diện Sáng / Tối">
-                    <i id="theme-icon-sun" data-lucide="sun" class="w-4 h-4 text-amber-500 hidden"></i>
-                    <i id="theme-icon-moon" data-lucide="moon" class="w-4 h-4 text-cyan-400"></i>
-                    <span id="theme-label">Tối</span>
-                </button>
-
                 <!-- API Key Input & Mode Indicator -->
-                <div class="flex items-center bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-2.5 py-1.5 focus-within:border-cyan-500/60 transition">
-                    <i data-lucide="key" class="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 mr-2 shrink-0"></i>
-                    <input type="password" id="api-key-input" placeholder="Dán Gemini API Key..." class="bg-transparent text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none w-36 sm:w-44 font-mono">
+                <div class="flex items-center bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 focus-within:border-cyan-500/60 transition">
+                    <i data-lucide="key" class="w-3.5 h-3.5 text-amber-500 mr-2 shrink-0"></i>
+                    <input type="password" id="api-key-input" placeholder="Dán Gemini API Key..." class="bg-transparent text-xs text-slate-800 placeholder-slate-400 focus:outline-none w-36 sm:w-44 font-mono">
                     <button id="btn-clear-apikey" type="button" class="hidden ml-1 text-slate-400 hover:text-rose-500 transition cursor-pointer" title="Xóa API Key đã lưu">
                         <i data-lucide="x" class="w-3.5 h-3.5"></i>
                     </button>
-                    <span id="mode-badge" class="ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30 whitespace-nowrap">
+                    <span id="mode-badge" class="ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700 border border-amber-500/30 whitespace-nowrap">
                         CHƯA CÓ KEY
                     </span>
                 </div>
@@ -207,30 +173,30 @@
         <div class="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
             
             <!-- LEFT COLUMN: INPUT (6 cols on lg) -->
-            <section class="lg:col-span-6 flex flex-col bg-white/95 dark:bg-cad-panel/90 border border-slate-200 dark:border-slate-800 rounded-xl shadow-lg dark:shadow-2xl overflow-hidden transition-colors duration-200">
+            <section class="lg:col-span-6 flex flex-col bg-white/95 border border-slate-200 rounded-xl shadow-lg overflow-hidden">
                 
                 <!-- Input Toolbar -->
-                <div class="p-3 sm:p-4 bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 transition-colors duration-200">
+                <div class="p-3 sm:p-4 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
                     <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-cyan-500 dark:bg-cyan-400 animate-pulse"></span>
-                        <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">Nguồn Dữ Liệu (Input)</h2>
+                        <span class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
+                        <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-700">Nguồn Dữ Liệu (Input)</h2>
                     </div>
                     
                     <!-- Action Buttons -->
                     <div class="flex flex-wrap items-center gap-2">
-                        <button id="btn-screen-capture" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 dark:bg-cyan-500/15 dark:hover:bg-cyan-500/25 text-cyan-700 dark:text-cyan-300 border border-cyan-500/40 text-xs font-medium transition active:scale-95" title="Chụp màn hình hoặc cửa sổ AutoCAD">
+                        <button id="btn-screen-capture" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-700 border border-cyan-500/40 text-xs font-medium transition active:scale-95" title="Chụp màn hình hoặc cửa sổ AutoCAD">
                             <i data-lucide="crop" class="w-3.5 h-3.5"></i>
                             <span>Chụp vùng màn hình</span>
                         </button>
                         
-                        <button id="btn-upload-image" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 text-xs font-medium transition active:scale-95" title="Tải ảnh bản vẽ từ máy tính">
-                            <i data-lucide="upload" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400"></i>
+                        <button id="btn-upload-image" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-medium transition active:scale-95" title="Tải ảnh bản vẽ từ máy tính">
+                            <i data-lucide="upload" class="w-3.5 h-3.5 text-emerald-600"></i>
                             <span>Tải ảnh lên</span>
                         </button>
                         <input type="file" id="file-image-input" accept="image/*" class="hidden">
 
-                        <button id="btn-paste-trigger" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 text-xs font-medium transition active:scale-95" title="Dán ảnh từ Clipboard (Ctrl+V)">
-                            <i data-lucide="clipboard-paste" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400"></i>
+                        <button id="btn-paste-trigger" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-medium transition active:scale-95" title="Dán ảnh từ Clipboard (Ctrl+V)">
+                            <i data-lucide="clipboard-paste" class="w-3.5 h-3.5 text-blue-600"></i>
                             <span>Dán ảnh (Ctrl+V)</span>
                         </button>
                     </div>
@@ -240,46 +206,46 @@
                 <div class="p-4 flex-1 flex flex-col gap-4 relative">
                     
                     <!-- Scanning Overlay (Hidden by default) -->
-                    <div id="scanning-overlay" class="hidden absolute inset-0 bg-white/75 dark:bg-slate-950/60 backdrop-blur-[2px] z-20 flex flex-col items-center justify-center">
+                    <div id="scanning-overlay" class="hidden absolute inset-0 bg-white/80 backdrop-blur-[2px] z-20 flex flex-col items-center justify-center">
                         <div class="scanner-bar"></div>
-                        <div class="bg-white/95 dark:bg-slate-900/90 border border-cyan-500/40 px-4 py-3 rounded-xl flex items-center gap-3 shadow-2xl">
-                            <i data-lucide="cpu" class="w-5 h-5 text-cyan-600 dark:text-cyan-400 animate-spin"></i>
+                        <div class="bg-white/95 border border-cyan-500/40 px-4 py-3 rounded-xl flex items-center gap-3 shadow-2xl">
+                            <i data-lucide="cpu" class="w-5 h-5 text-cyan-600 animate-spin"></i>
                             <div>
-                                <p class="text-sm font-medium text-slate-900 dark:text-white">Gemini Vision đang phân tích...</p>
-                                <p class="text-xs text-cyan-600 dark:text-cyan-400 font-mono" id="scanning-domain-text">Ngữ cảnh: AutoCAD / Kỹ thuật vẽ</p>
+                                <p class="text-sm font-medium text-slate-900">Gemini Vision đang phân tích...</p>
+                                <p class="text-xs text-cyan-600 font-mono" id="scanning-domain-text">Ngữ cảnh: AutoCAD / Kỹ thuật vẽ</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Image Preview / Dropzone Box -->
-                    <div id="image-dropzone" class="relative rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700/80 hover:border-cyan-500/60 bg-slate-50/80 dark:bg-slate-950/50 transition-all min-h-[210px] flex flex-col items-center justify-center p-4 group overflow-hidden">
+                    <div id="image-dropzone" class="relative rounded-xl border-2 border-dashed border-slate-300 hover:border-cyan-500/60 bg-slate-50/80 transition-all min-h-[210px] flex flex-col items-center justify-center p-4 group overflow-hidden">
                         
                         <!-- Empty State -->
                         <div id="image-empty-state" class="text-center max-w-sm">
-                            <div class="w-12 h-12 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center mx-auto mb-3 group-hover:border-cyan-500/40 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 text-slate-500 dark:text-slate-400 shadow-sm transition">
+                            <div class="w-12 h-12 rounded-full bg-white border border-slate-200 flex items-center justify-center mx-auto mb-3 group-hover:border-cyan-500/40 group-hover:text-cyan-600 text-slate-500 shadow-sm transition">
                                 <i data-lucide="scan-line" class="w-6 h-6"></i>
                             </div>
-                            <p class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Chụp vùng màn hình, tải ảnh hoặc nhấn <kbd class="px-1.5 py-0.5 text-xs font-mono bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-cyan-700 dark:text-cyan-400">Ctrl + V</kbd></p>
+                            <p class="text-sm font-medium text-slate-700 mb-1">Chụp vùng màn hình, tải ảnh hoặc nhấn <kbd class="px-1.5 py-0.5 text-xs font-mono bg-white border border-slate-300 rounded text-cyan-700">Ctrl + V</kbd></p>
                             <p class="text-xs text-slate-500">Hỗ trợ kéo thả file ảnh trực tiếp vào khung này, chụp cửa sổ AutoCAD, bản vẽ PDF hoặc tài liệu kỹ thuật.</p>
                         </div>
 
                         <!-- Active Image Preview -->
                         <div id="image-preview-wrapper" class="hidden w-full h-full flex flex-col items-center justify-center relative">
-                            <div class="absolute top-2 right-2 flex items-center gap-1.5 z-10 bg-white/95 dark:bg-slate-900/90 backdrop-blur border border-slate-300 dark:border-slate-700 p-1 rounded-lg shadow-lg">
-                                <button id="btn-recrop" class="p-1.5 text-slate-600 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition" title="Cắt lại vùng này">
+                            <div class="absolute top-2 right-2 flex items-center gap-1.5 z-10 bg-white/95 backdrop-blur border border-slate-300 p-1 rounded-lg shadow-lg">
+                                <button id="btn-recrop" class="p-1.5 text-slate-600 hover:text-cyan-600 hover:bg-slate-100 rounded transition" title="Cắt lại vùng này">
                                     <i data-lucide="crop" class="w-4 h-4"></i>
                                 </button>
-                                <button id="btn-zoom-img" class="p-1.5 text-slate-600 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition" title="Phóng to / Thu nhỏ">
+                                <button id="btn-zoom-img" class="p-1.5 text-slate-600 hover:text-cyan-600 hover:bg-slate-100 rounded transition" title="Phóng to / Thu nhỏ">
                                     <i data-lucide="zoom-in" class="w-4 h-4"></i>
                                 </button>
-                                <button id="btn-clear-img" class="p-1.5 text-slate-600 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition" title="Xóa ảnh">
+                                <button id="btn-clear-img" class="p-1.5 text-slate-600 hover:text-rose-600 hover:bg-slate-100 rounded transition" title="Xóa ảnh">
                                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                                 </button>
                             </div>
                             <div class="overflow-auto max-h-[280px] w-full flex justify-center items-center rounded-lg">
-                                <img id="preview-img" src="" alt="Vùng ảnh kỹ thuật đã chọn" class="max-h-[260px] w-auto object-contain rounded border border-slate-300 dark:border-slate-700/80 shadow-md transition-transform duration-200">
+                                <img id="preview-img" src="" alt="Vùng ảnh kỹ thuật đã chọn" class="max-h-[260px] w-auto object-contain rounded border border-slate-300 shadow-md transition-transform duration-200">
                             </div>
-                            <span id="image-meta-badge" class="mt-2 text-[11px] font-mono text-cyan-700 dark:text-cyan-400/90 bg-cyan-50 dark:bg-cyan-950/50 border border-cyan-500/30 dark:border-cyan-500/20 px-2.5 py-0.5 rounded-full">
+                            <span id="image-meta-badge" class="mt-2 text-[11px] font-mono text-cyan-700 bg-cyan-50 border border-cyan-500/30 px-2.5 py-0.5 rounded-full">
                                 Đã sẵn sàng nhận diện OCR & Thuật ngữ
                             </span>
                         </div>
@@ -288,18 +254,15 @@
                     <!-- Text Input Area -->
                     <div class="flex-1 flex flex-col">
                         <div class="flex items-center justify-between mb-1.5">
-                            <label for="source-text" class="text-xs font-medium text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
-                                <i data-lucide="terminal" class="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400"></i>
+                            <label for="source-text" class="text-xs font-medium text-slate-600 flex items-center gap-1.5">
+                                <i data-lucide="terminal" class="w-3.5 h-3.5 text-cyan-600"></i>
                                 <span>Văn bản / Lệnh / Ghi chú bản vẽ (Tùy chọn bổ sung)</span>
                             </label>
                             <div class="flex items-center gap-2">
-                                <button id="btn-clear-text" class="text-[11px] text-slate-500 hover:text-slate-800 dark:hover:text-slate-300">Xóa chữ</button>
+                                <button id="btn-clear-text" class="text-[11px] text-slate-500 hover:text-slate-800">Xóa chữ</button>
                             </div>
                         </div>
-                        <textarea id="source-text" rows="4" class="w-full flex-1 bg-slate-50 dark:bg-slate-950/70 border border-slate-300 dark:border-slate-800 focus:border-cyan-500/60 rounded-xl p-3 text-sm font-mono text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 resize-none leading-relaxed transition-colors" placeholder="Nhập hoặc dán dòng lệnh, ghi chú kỹ thuật cần dịch..."></textarea>
-                    </div>
-                        </div>
-                        <textarea id="source-text" rows="4" class="w-full flex-1 bg-slate-50 dark:bg-slate-950/70 border border-slate-300 dark:border-slate-800 focus:border-cyan-500/60 rounded-xl p-3 text-sm font-mono text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 resize-none leading-relaxed transition-colors" placeholder="Nhập hoặc dán dòng lệnh, ghi chú trên bản vẽ (VD: CHAMFER DIST 5x45°, FILLET R10, TOLERANCE ±0.05mm, ALL DIMENSIONS IN MM...)"></textarea>
+                        <textarea id="source-text" rows="4" class="w-full flex-1 bg-slate-50 border border-slate-300 focus:border-cyan-500/60 rounded-xl p-3 text-sm font-mono text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 resize-none leading-relaxed transition-colors" placeholder="Nhập hoặc dán dòng lệnh, ghi chú trên bản vẽ (VD: CHAMFER DIST 5x45°, FILLET R10, TOLERANCE ±0.05mm, ALL DIMENSIONS IN MM...)"></textarea>
                     </div>
 
                     <!-- Primary Translate Button -->
@@ -311,20 +274,20 @@
             </section>
 
             <!-- RIGHT COLUMN: OUTPUT (6 cols on lg) -->
-            <section class="lg:col-span-6 flex flex-col bg-white/95 dark:bg-cad-panel/90 border border-slate-200 dark:border-slate-800 rounded-xl shadow-lg dark:shadow-2xl overflow-hidden transition-colors duration-200">
+            <section class="lg:col-span-6 flex flex-col bg-white/95 border border-slate-200 rounded-xl shadow-lg overflow-hidden">
                 
                 <!-- Output Header -->
-                <div class="p-3 sm:p-4 bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 transition-colors duration-200">
+                <div class="p-3 sm:p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-2">
                     <div class="flex items-center gap-2">
-                        <i data-lucide="cpu" class="w-4 h-4 text-cyan-600 dark:text-cyan-400"></i>
-                        <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">Kết Quả Phân Tích Chuyên Ngành</h2>
+                        <i data-lucide="cpu" class="w-4 h-4 text-cyan-600"></i>
+                        <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-700">Kết Quả Phân Tích Chuyên Ngành</h2>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span id="result-domain-tag" class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-700">
+                        <span id="result-domain-tag" class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-300">
                             AutoCAD / Kỹ thuật vẽ
                         </span>
-                        <button id="btn-copy-result" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 text-xs font-medium transition active:scale-95 disabled:opacity-40" disabled>
-                            <i data-lucide="copy" class="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400"></i>
+                        <button id="btn-copy-result" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-medium transition active:scale-95 disabled:opacity-40" disabled>
+                            <i data-lucide="copy" class="w-3.5 h-3.5 text-cyan-600"></i>
                             <span>Copy kết quả</span>
                         </button>
                     </div>
@@ -335,10 +298,10 @@
                     
                     <!-- Placeholder State -->
                     <div id="output-placeholder" class="flex-1 flex flex-col items-center justify-center text-center py-12 px-4">
-                        <div class="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4 shadow-inner">
-                            <i data-lucide="book-open-check" class="w-8 h-8 text-slate-400 dark:text-slate-600"></i>
+                        <div class="w-16 h-16 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center mb-4 shadow-inner">
+                            <i data-lucide="book-open-check" class="w-8 h-8 text-slate-400"></i>
                         </div>
-                        <h3 class="text-base font-medium text-slate-700 dark:text-slate-300 mb-1.5">Sẵn sàng giải mã tài liệu kỹ thuật</h3>
+                        <h3 class="text-base font-medium text-slate-700 mb-1.5">Sẵn sàng giải mã tài liệu kỹ thuật</h3>
                         <p class="text-xs text-slate-500 max-w-md leading-relaxed">
                             Chọn vùng chụp màn hình trên bản vẽ hoặc nhập văn bản chuyên ngành ở cột bên trái. Gemini sẽ tự động chuẩn hóa thuật ngữ, giữ nguyên mã lệnh gốc và giải thích chi tiết thông số.
                         </p>
@@ -348,36 +311,36 @@
                     <div id="output-content" class="hidden flex-col gap-5">
                         
                         <!-- Card 1: Standard Technical Translation -->
-                        <div class="bg-slate-50/90 dark:bg-slate-950/70 border border-cyan-500/40 dark:border-cyan-500/30 rounded-xl p-4 shadow-sm dark:shadow-inner relative">
+                        <div class="bg-slate-50/90 border border-cyan-500/40 rounded-xl p-4 shadow-sm relative">
                             <div class="flex items-center justify-between mb-2.5">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-cyan-700 flex items-center gap-1.5">
                                     <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
                                     1. Bản Dịch Chuẩn Chuyên Ngành
                                 </span>
-                                <span class="text-[10px] font-mono text-slate-500" id="translation-confidence">Độ chính xác ngữ cảnh: 99.4%</span>
+                                <span class="text-[10px] font-mono text-slate-500" id="translation-confidence">Model: Gemini Vision</span>
                             </div>
-                            <div id="translated-text-box" class="text-sm sm:text-base text-slate-800 dark:text-slate-100 leading-relaxed whitespace-pre-line font-normal"></div>
+                            <div id="translated-text-box" class="text-sm sm:text-base text-slate-800 leading-relaxed whitespace-pre-line font-normal"></div>
                         </div>
 
                         <!-- Card 2: Terminology & Command Breakdown Table -->
-                        <div class="bg-slate-50/90 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm">
-                            <div class="px-4 py-3 bg-slate-100/80 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-blue-700 dark:text-blue-400 flex items-center gap-1.5">
+                        <div class="bg-slate-50/90 border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                            <div class="px-4 py-3 bg-slate-100/80 border-b border-slate-200 flex items-center justify-between">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-blue-700 flex items-center gap-1.5">
                                     <i data-lucide="table-2" class="w-3.5 h-3.5"></i>
                                     2. Giải Thích Thuật Ngữ & Lệnh Tắt (Terminology Breakdown)
                                 </span>
-                                <span id="term-count-badge" class="text-[11px] font-mono text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded">0 thuật ngữ</span>
+                                <span id="term-count-badge" class="text-[11px] font-mono text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded">0 thuật ngữ</span>
                             </div>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left border-collapse">
                                     <thead>
-                                        <tr class="border-b border-slate-200 dark:border-slate-800 text-[11px] font-mono uppercase text-slate-500 dark:text-slate-400 bg-slate-100/50 dark:bg-slate-900/30">
+                                        <tr class="border-b border-slate-200 text-[11px] font-mono uppercase text-slate-500 bg-slate-100/50">
                                             <th class="py-2.5 px-3.5">Thuật ngữ / Lệnh</th>
                                             <th class="py-2.5 px-3.5">Nghĩa chuyên ngành</th>
                                             <th class="py-2.5 px-3.5">Lệnh tắt / Ghi chú thực tế</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="terminology-tbody" class="divide-y divide-slate-200 dark:divide-slate-800/70 text-xs sm:text-sm">
+                                    <tbody id="terminology-tbody" class="divide-y divide-slate-200 text-xs sm:text-sm">
                                         <!-- Rows injected dynamically -->
                                     </tbody>
                                 </table>
@@ -385,26 +348,26 @@
                         </div>
 
                         <!-- Card 3: Engineering Note / Context Tip -->
-                        <div id="engineering-note-box" class="bg-amber-50 dark:bg-amber-500/5 border border-amber-300/70 dark:border-amber-500/20 rounded-xl p-3.5 flex items-start gap-3">
-                            <i data-lucide="lightbulb" class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5"></i>
-                            <div class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                                <span class="font-semibold text-amber-700 dark:text-amber-400">Lưu ý tiêu chuẩn kỹ thuật: </span>
+                        <div id="engineering-note-box" class="bg-amber-50 border border-amber-300/70 rounded-xl p-3.5 flex items-start gap-3">
+                            <i data-lucide="lightbulb" class="w-4 h-4 text-amber-600 shrink-0 mt-0.5"></i>
+                            <div class="text-xs text-slate-700 leading-relaxed">
+                                <span class="font-semibold text-amber-700">Lưu ý tiêu chuẩn kỹ thuật: </span>
                                 <span id="engineering-note-text"></span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Recent Translation History -->
-                    <div class="mt-auto pt-4 border-t border-slate-200 dark:border-slate-800/80">
+                    <div class="mt-auto pt-4 border-t border-slate-200">
                         <div class="flex items-center justify-between mb-2.5">
-                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                                <i data-lucide="history" class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400"></i>
+                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                                <i data-lucide="history" class="w-3.5 h-3.5 text-slate-500"></i>
                                 Lịch sử dịch gần đây
                             </span>
-                            <button id="btn-clear-history" class="text-[11px] text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 transition">Xóa lịch sử</button>
+                            <button id="btn-clear-history" class="text-[11px] text-slate-500 hover:text-rose-600 transition">Xóa lịch sử</button>
                         </div>
                         <div id="history-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[120px] overflow-y-auto pr-1">
-                            <div class="text-xs text-slate-500 dark:text-slate-600 italic col-span-full py-2">Chưa có lịch sử dịch nào trong phiên làm việc.</div>
+                            <div class="text-xs text-slate-500 italic col-span-full py-2">Chưa có lịch sử dịch nào trong phiên làm việc.</div>
                         </div>
                     </div>
 
@@ -414,23 +377,23 @@
     </main>
 
     <!-- MODAL OVERLAY FOR SCREEN REGION CROPPING -->
-    <div id="crop-modal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md hidden flex-col">
+    <div id="crop-modal" class="fixed inset-0 z-50 bg-slate-900/90 backdrop-blur-md hidden flex-col">
         <!-- Cropper Top Bar -->
-        <div class="px-4 py-3 bg-slate-900 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
+        <div class="px-4 py-3 bg-white border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-3">
-                <span class="px-2 py-1 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 text-xs font-mono font-semibold flex items-center gap-1.5">
+                <span class="px-2 py-1 rounded bg-cyan-500/15 text-cyan-700 border border-cyan-500/40 text-xs font-mono font-semibold flex items-center gap-1.5">
                     <i data-lucide="crosshair" class="w-3.5 h-3.5"></i>
                     REGION CAPTURE
                 </span>
-                <p class="text-xs sm:text-sm text-slate-300">Kéo chuột trên bản vẽ bên dưới để khoanh vùng chữ hoặc ký hiệu kỹ thuật cần dịch</p>
+                <p class="text-xs sm:text-sm text-slate-700">Kéo chuột trên bản vẽ bên dưới để khoanh vùng chữ hoặc ký hiệu kỹ thuật cần dịch</p>
             </div>
             <div class="flex items-center gap-2">
-                <span id="crop-dimensions" class="text-xs font-mono text-slate-400 mr-2 hidden sm:inline">0 × 0 px</span>
+                <span id="crop-dimensions" class="text-xs font-mono text-slate-500 mr-2 hidden sm:inline">0 × 0 px</span>
                 <button id="btn-confirm-crop" class="px-4 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold flex items-center gap-1.5 transition disabled:opacity-40" disabled>
                     <i data-lucide="check" class="w-3.5 h-3.5"></i>
                     <span>Xác nhận vùng chọn</span>
                 </button>
-                <button id="btn-cancel-crop" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition">
+                <button id="btn-cancel-crop" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium border border-slate-300 transition">
                     Hủy (Esc)
                 </button>
             </div>
@@ -438,7 +401,7 @@
 
         <!-- Cropper Canvas Area -->
         <div id="crop-workspace" class="flex-1 relative overflow-hidden flex items-center justify-center p-4 select-none">
-            <canvas id="crop-canvas" class="max-w-full max-h-full border border-slate-700 shadow-2xl cursor-crosshair-cad rounded"></canvas>
+            <canvas id="crop-canvas" class="max-w-full max-h-full border border-slate-300 shadow-2xl cursor-crosshair-cad rounded bg-white"></canvas>
         </div>
     </div>
 
@@ -451,7 +414,6 @@
         // 1. STATE & CONFIGURATION
         // =========================================================================
         const state = {
-            theme: localStorage.getItem('techspec_theme') || 'dark',
             domain: localStorage.getItem('techspec_domain') || 'autocad',
             langPair: localStorage.getItem('techspec_lang') || 'en-vi',
             apiKey: localStorage.getItem('techspec_gemini_key') || '',
@@ -465,10 +427,6 @@
         // 2. DOM ELEMENTS
         // =========================================================================
         const els = {
-            btnThemeToggle: document.getElementById('btn-theme-toggle'),
-            themeIconSun: document.getElementById('theme-icon-sun'),
-            themeIconMoon: document.getElementById('theme-icon-moon'),
-            themeLabel: document.getElementById('theme-label'),
             domainSelect: document.getElementById('domain-select'),
             langSelect: document.getElementById('lang-select'),
             apiKeyInput: document.getElementById('api-key-input'),
@@ -516,7 +474,60 @@
             btnConfirmCrop: document.getElementById('btn-confirm-crop'),
             btnCancelCrop: document.getElementById('btn-cancel-crop')
         };
-// ... existing code ... -->
+
+        // =========================================================================
+        // 3. UTILITY FUNCTIONS (TOAST & CLIPBOARD)
+        // =========================================================================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const colors = {
+                info: 'bg-white border-cyan-500/60 text-cyan-800',
+                success: 'bg-white border-emerald-500/60 text-emerald-800',
+                warning: 'bg-white border-amber-500/60 text-amber-800',
+                error: 'bg-white border-rose-500/60 text-rose-800'
+            };
+
+            const icons = {
+                info: 'info',
+                success: 'check-circle',
+                warning: 'alert-triangle',
+                error: 'x-circle'
+            };
+
+            toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-xl border shadow-xl backdrop-blur-md text-xs font-medium transition-all duration-300 translate-y-2 opacity-0 ${colors[type] || colors.info}`;
+            toast.innerHTML = `<i data-lucide="${icons[type] || 'info'}" class="w-4 h-4 shrink-0"></i><span>${message}</span>`;
+            
+            container.appendChild(toast);
+            lucide.createIcons({ root: toast });
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function copyTextToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast('Đã sao chép kết quả dịch vào bộ nhớ tạm!', 'success');
+            } catch (err) {
+                showToast('Không thể sao chép tự động, vui lòng bôi đen và copy thủ công.', 'error');
+            }
+            document.body.removeChild(textarea);
+        }
+
         // =========================================================================
         // 4. HEADER CONTROLS & PERSISTENT SETTINGS
         // =========================================================================
@@ -526,12 +537,12 @@
             if (state.apiKey.length > 10) {
                 localStorage.setItem('techspec_gemini_key', state.apiKey);
                 els.modeBadge.textContent = 'API SẴN SÀNG';
-                els.modeBadge.className = 'ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 whitespace-nowrap';
+                els.modeBadge.className = 'ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 border border-emerald-500/30 whitespace-nowrap';
                 els.btnClearApiKey.classList.remove('hidden');
             } else {
                 localStorage.removeItem('techspec_gemini_key');
                 els.modeBadge.textContent = 'CHƯA CÓ KEY';
-                els.modeBadge.className = 'ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30 whitespace-nowrap';
+                els.modeBadge.className = 'ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700 border border-amber-500/30 whitespace-nowrap';
                 els.btnClearApiKey.classList.add('hidden');
             }
         }
@@ -577,7 +588,161 @@
             endX: 0,
             endY: 0
         };
-// ... existing code ... -->
+
+        function openCropModal(sourceCanvas) {
+            state.fullCaptureCanvas = sourceCanvas;
+            els.cropModal.classList.remove('hidden');
+            els.cropModal.classList.add('flex');
+            els.btnConfirmCrop.disabled = true;
+            els.cropDimensions.textContent = '0 × 0 px';
+
+            const canvas = els.cropCanvas;
+            canvas.width = sourceCanvas.width;
+            canvas.height = sourceCanvas.height;
+
+            cropState.isDrawing = false;
+            cropState.startX = 0;
+            cropState.startY = 0;
+            cropState.endX = 0;
+            cropState.endY = 0;
+
+            renderCropCanvas();
+        }
+
+        function closeCropModal() {
+            els.cropModal.classList.add('hidden');
+            els.cropModal.classList.remove('flex');
+        }
+
+        function renderCropCanvas() {
+            if (!state.fullCaptureCanvas) return;
+            const canvas = els.cropCanvas;
+            const ctx = canvas.getContext('2d');
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(state.fullCaptureCanvas, 0, 0);
+
+            const x = Math.min(cropState.startX, cropState.endX);
+            const y = Math.min(cropState.startY, cropState.endY);
+            const w = Math.abs(cropState.endX - cropState.startX);
+            const h = Math.abs(cropState.endY - cropState.startY);
+
+            if (w > 5 && h > 5) {
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.55)';
+                ctx.fillRect(0, 0, canvas.width, y);
+                ctx.fillRect(0, y + h, canvas.width, canvas.height - (y + h));
+                ctx.fillRect(0, y, x, h);
+                ctx.fillRect(x + w, y, canvas.width - (x + w), h);
+
+                ctx.strokeStyle = '#0284c7';
+                ctx.lineWidth = 2.5;
+                ctx.setLineDash([6, 4]);
+                ctx.strokeRect(x, y, w, h);
+                ctx.setLineDash([]);
+
+                ctx.fillStyle = '#0ea5e9';
+                const hs = 8;
+                ctx.fillRect(x - hs/2, y - hs/2, hs, hs);
+                ctx.fillRect(x + w - hs/2, y - hs/2, hs, hs);
+                ctx.fillRect(x - hs/2, y + h - hs/2, hs, hs);
+                ctx.fillRect(x + w - hs/2, y + h - hs/2, hs, hs);
+
+                els.cropDimensions.textContent = `${Math.round(w)} × ${Math.round(h)} px`;
+                els.btnConfirmCrop.disabled = false;
+            }
+        }
+
+        function getCanvasCoordinates(e) {
+            const rect = els.cropCanvas.getBoundingClientRect();
+            const scaleX = els.cropCanvas.width / rect.width;
+            const scaleY = els.cropCanvas.height / rect.height;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: Math.max(0, Math.min(els.cropCanvas.width, (clientX - rect.left) * scaleX)),
+                y: Math.max(0, Math.min(els.cropCanvas.height, (clientY - rect.top) * scaleY))
+            };
+        }
+
+        els.cropCanvas.addEventListener('mousedown', (e) => {
+            const pos = getCanvasCoordinates(e);
+            cropState.isDrawing = true;
+            cropState.startX = pos.x;
+            cropState.startY = pos.y;
+            cropState.endX = pos.x;
+            cropState.endY = pos.y;
+            renderCropCanvas();
+        });
+
+        els.cropCanvas.addEventListener('mousemove', (e) => {
+            if (!cropState.isDrawing) return;
+            const pos = getCanvasCoordinates(e);
+            cropState.endX = pos.x;
+            cropState.endY = pos.y;
+            renderCropCanvas();
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (cropState.isDrawing) {
+                cropState.isDrawing = false;
+                renderCropCanvas();
+            }
+        });
+
+        els.cropCanvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const pos = getCanvasCoordinates(e);
+            cropState.isDrawing = true;
+            cropState.startX = pos.x;
+            cropState.startY = pos.y;
+            cropState.endX = pos.x;
+            cropState.endY = pos.y;
+        }, { passive: false });
+
+        els.cropCanvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (!cropState.isDrawing) return;
+            const pos = getCanvasCoordinates(e);
+            cropState.endX = pos.x;
+            cropState.endY = pos.y;
+            renderCropCanvas();
+        }, { passive: false });
+
+        els.cropCanvas.addEventListener('touchend', () => {
+            cropState.isDrawing = false;
+            renderCropCanvas();
+        });
+
+        els.btnConfirmCrop.addEventListener('click', () => {
+            const x = Math.min(cropState.startX, cropState.endX);
+            const y = Math.min(cropState.startY, cropState.endY);
+            const w = Math.abs(cropState.endX - cropState.startX);
+            const h = Math.abs(cropState.endY - cropState.startY);
+
+            if (w < 10 || h < 10) {
+                showToast('Vùng chọn quá nhỏ, vui lòng kéo vùng rộng hơn.', 'warning');
+                return;
+            }
+
+            const croppedCanvas = document.createElement('canvas');
+            croppedCanvas.width = w;
+            croppedCanvas.height = h;
+            const ctx = croppedCanvas.getContext('2d');
+            ctx.drawImage(state.fullCaptureCanvas, x, y, w, h, 0, 0, w, h);
+
+            const dataUrl = croppedCanvas.toDataURL('image/png');
+            setPreviewImage(dataUrl, `Vùng cắt: ${Math.round(w)}×${Math.round(h)}px`);
+            closeCropModal();
+            showToast('Đã trích xuất vùng bản vẽ! Nhấn "Dịch chuyên ngành" để phân tích.', 'success');
+        });
+
+        els.btnCancelCrop.addEventListener('click', closeCropModal);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !els.cropModal.classList.contains('hidden')) {
+                closeCropModal();
+            }
+        });
+
         // Screen Capture Button (Real getDisplayMedia)
         els.btnScreenCapture.addEventListener('click', async () => {
             try {
@@ -715,7 +880,29 @@
                 showToast('Vui lòng nhấn tổ hợp phím Ctrl + V trực tiếp trên trang để dán ảnh.', 'info');
             }
         });
-// ... existing code ... -->
+
+        els.btnRecrop.addEventListener('click', () => {
+            if (state.fullCaptureCanvas) {
+                openCropModal(state.fullCaptureCanvas);
+            } else if (state.currentImageBase64) {
+                const img = new Image();
+                img.onload = () => {
+                    const c = document.createElement('canvas');
+                    c.width = img.width;
+                    c.height = img.height;
+                    c.getContext('2d').drawImage(img, 0, 0);
+                    openCropModal(c);
+                };
+                img.src = state.currentImageBase64;
+            }
+        });
+
+        els.btnZoomImg.addEventListener('click', () => {
+            state.isZoomed = !state.isZoomed;
+            els.previewImg.style.transform = state.isZoomed ? 'scale(1.5)' : 'scale(1)';
+            els.previewImg.style.transformOrigin = 'center center';
+        });
+
         els.btnClearImg.addEventListener('click', () => {
             clearPreviewImage();
             showToast('Đã xóa ảnh vùng chọn.', 'info');
@@ -743,7 +930,51 @@ Quy tắc bắt buộc:
   ],
   "engineeringNote": "Một lưu ý quan trọng về tiêu chuẩn kỹ thuật, gia công hoặc thi công liên quan đến đoạn nội dung này."
 }`;
-// ... existing code ... -->
+
+            const parts = [{ text: systemPrompt }];
+            if (textInput) {
+                parts.push({ text: `Văn bản cần dịch:\n${textInput}` });
+            } else {
+                parts.push({ text: `Hãy trích xuất toàn bộ chữ và ký hiệu kỹ thuật trong vùng ảnh này và dịch sang tiếng Việt chuyên ngành.` });
+            }
+
+            if (imageBase64) {
+                const base64Data = imageBase64.split(',')[1];
+                const mimeType = imageBase64.substring(imageBase64.indexOf(':') + 1, imageBase64.indexOf(';'));
+                parts.push({
+                    inlineData: {
+                        mimeType: mimeType,
+                        data: base64Data
+                    }
+                });
+            }
+
+            let lastError = null;
+            for (const modelName of modelsToTry) {
+                const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(apiKey)}`;
+                try {
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts }],
+                            generationConfig: {
+                                temperature: 0.2,
+                                responseMimeType: "application/json"
+                            }
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errData = await response.json().catch(() => ({}));
+                        const errMsg = errData.error?.message || `Lỗi HTTP ${response.status}`;
+                        if (errMsg.toLowerCase().includes('no longer available') || errMsg.toLowerCase().includes('not found') || response.status === 404) {
+                            lastError = new Error(errMsg);
+                            continue;
+                        }
+                        throw new Error(errMsg);
+                    }
+
                     const data = await response.json();
                     const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
                     const cleanedJson = rawText.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim();
@@ -776,14 +1007,91 @@ Quy tắc bắt buộc:
             const terms = Array.isArray(resultObj.terms) ? resultObj.terms : [];
             els.termCountBadge.textContent = `${terms.length} thuật ngữ`;
             els.terminologyTbody.innerHTML = '';
-// ... existing code ... -->
+
+            terms.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-100/70 transition';
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3.5 font-mono font-semibold text-cyan-700 align-top">${escapeHtml(item.term)}</td>
+                    <td class="py-2.5 px-3.5 text-slate-800 font-medium align-top">${escapeHtml(item.meaning)}</td>
+                    <td class="py-2.5 px-3.5 text-slate-500 text-xs align-top">${escapeHtml(item.note)}</td>
+                `;
+                els.terminologyTbody.appendChild(tr);
+            });
+
+            els.engineeringNoteText.textContent = resultObj.engineeringNote || 'Luôn đối chiếu đơn vị đo lường (mm/inch) trên khung tên bản vẽ trước khi gia công.';
+
+            addToHistory({
+                domain: els.domainSelect.options[els.domainSelect.selectedIndex].text,
+                snippet: sourceSnippet,
+                result: resultObj,
+                time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+            });
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
         function addToHistory(entry) {
             state.history.unshift(entry);
             if (state.history.length > 10) state.history.pop();
             localStorage.setItem('techspec_history', JSON.stringify(state.history));
             renderHistoryList();
         }
-// ... existing code ... -->
+
+        function renderHistoryList() {
+            if (state.history.length === 0) {
+                els.historyList.innerHTML = `<div class="text-xs text-slate-500 italic col-span-full py-2">Chưa có lịch sử dịch nào trong phiên làm việc.</div>`;
+                return;
+            }
+
+            els.historyList.innerHTML = '';
+            state.history.forEach((item) => {
+                const card = document.createElement('button');
+                card.className = 'text-left p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-cyan-500/50 transition flex flex-col gap-1 group';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between w-full">
+                        <span class="text-[10px] font-mono text-cyan-700 truncate max-w-[70%]">${escapeHtml(item.domain)}</span>
+                        <span class="text-[10px] font-mono text-slate-400">${item.time}</span>
+                    </div>
+                    <p class="text-xs text-slate-700 truncate w-full font-mono group-hover:text-slate-900">${escapeHtml(item.snippet)}</p>
+                `;
+                card.addEventListener('click', () => {
+                    renderTranslationResultWithoutSaving(item.result);
+                    showToast('Đã khôi phục kết quả từ lịch sử.', 'info');
+                });
+                els.historyList.appendChild(card);
+            });
+        }
+
+        function renderTranslationResultWithoutSaving(resultObj) {
+            els.outputPlaceholder.classList.add('hidden');
+            els.outputContent.classList.remove('hidden');
+            els.outputContent.classList.add('flex');
+            els.btnCopyResult.disabled = false;
+            els.translatedTextBox.textContent = resultObj.translation || '';
+            const terms = Array.isArray(resultObj.terms) ? resultObj.terms : [];
+            els.termCountBadge.textContent = `${terms.length} thuật ngữ`;
+            els.terminologyTbody.innerHTML = '';
+            terms.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-100/70 transition';
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3.5 font-mono font-semibold text-cyan-700 align-top">${escapeHtml(item.term)}</td>
+                    <td class="py-2.5 px-3.5 text-slate-800 font-medium align-top">${escapeHtml(item.meaning)}</td>
+                    <td class="py-2.5 px-3.5 text-slate-500 text-xs align-top">${escapeHtml(item.note)}</td>
+                `;
+                els.terminologyTbody.appendChild(tr);
+            });
+            els.engineeringNoteText.textContent = resultObj.engineeringNote || '';
+        }
+
         els.btnClearHistory.addEventListener('click', () => {
             state.history = [];
             localStorage.removeItem('techspec_history');
@@ -831,4 +1139,16 @@ Quy tắc bắt buộc:
         });
 
         // Copy Result Button
-// ... existing code ... -->
+        els.btnCopyResult.addEventListener('click', () => {
+            const mainText = els.translatedTextBox.textContent;
+            const rows = Array.from(els.terminologyTbody.querySelectorAll('tr')).map(tr => {
+                const cells = tr.querySelectorAll('td');
+                return `- ${cells[0]?.textContent}: ${cells[1]?.textContent} (${cells[2]?.textContent})`;
+            }).join('\n');
+
+            const fullCopy = `=== BẢN DỊCH CHUYÊN NGÀNH (${els.resultDomainTag.textContent}) ===\n${mainText}\n\n=== THUẬT NGỮ CHI TIẾT ===\n${rows}`;
+            copyTextToClipboard(fullCopy);
+        });
+    </script>
+</body>
+</html>
